@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask Development Template</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #282c34;
+            color: white;
+            text-align: center;
+            flex-direction: column;
+        }
+        .header {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .subtext {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            margin-bottom: 20px;
+        }
+        .login-button {
+            background-color: transparent;
+            color: #61dafb;
+            border: 2px solid #61dafb;
+            font-size: 1rem;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s, color 0.3s;
+        }
+        .login-button:hover {
+            background-color: #61dafb;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">Welcome to the Flask Development Template</div>
+    <div class="subtext">Created by Sarveshwar Senthil Kumar</div>
+    {% if authentication == True %}
+    <button class="login-button" onclick="location.href='/auth/login'">Login (Optional)</button>
+    <button class="login-button" style="margin-top: 5px;" onclick="location.href='/signup'">Signup (Optional)</button>
+    {% endif %}
+</body>
+</html>
