@@ -1,4 +1,10 @@
 /flask_session
 /__pycache__
+
 users.db
+apikeys.db
+contacts.db
+projects.db
+tasks.db
+
 .env
