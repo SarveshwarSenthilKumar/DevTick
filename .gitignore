@@ -8,3 +8,6 @@ projects.db
 tasks.db
 
 .env
+
+PersonalNotes.txt
+#Have a PersonalNotes.txt for extra notes and ideas for future, as well as input on what to do next

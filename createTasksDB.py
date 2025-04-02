@@ -8,7 +8,7 @@ connection = sqlite3.connect("tasks.db")
 crsr = connection.cursor()
 
 fields = [
-    #Basic Information for API Key storage
+    #Basic Information for task storage
           "ownedBy", #Store ID of person who made the account
           "project", #Optional: project in which the task belongs to (ID of Project)
           "additionalFields", #Set up additional fields separated by a comma
