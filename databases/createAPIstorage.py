@@ -1,35 +1,29 @@
 import sqlite3
 import os
 
-database = open('tasks.db', 'w')
+
+database = open('../databases/apikeys.db', 'w')
 database.truncate(0)  
 database.close()
-connection = sqlite3.connect("tasks.db")
+connection = sqlite3.connect("../databases/apikeys.db")
 crsr = connection.cursor()
 
 fields = [
-    #Basic Information for task storage
+    #Basic Information for API Key storage
           "ownedBy", #Store ID of person who made the account
-          "project", #Optional: project in which the task belongs to (ID of Project)
           "additionalFields", #Set up additional fields separated by a comma
           "additionalValues", #Used to store the values for the additional fields
-          "title", 
+          "serviceName", 
           "description", 
-          "category", 
-          "status", #Active, Completed, On Hold, or Archived 
-          "createdAt",
-          "assignedTo",
-          "contributors",
-          "priority",
-          "notes",
-          "dueDate",
-          "completedAt",
+          "createdAt", 
+          "expiresAt", 
+          "isActive",
         ]
 
 
 #Easily converatble to MySQL or other databases due to iterative strategy as opposed to hardcoding the db create string, also improves readability and ease of maintenance and adding new fields
 
-dbCreateString = "CREATE TABLE tasks (id INTEGER, "
+dbCreateString = "CREATE TABLE apikeys (id INTEGER, "
 
 for field in fields:
     dbCreateString += field+", "

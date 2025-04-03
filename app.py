@@ -3,9 +3,9 @@ from flask import Flask, render_template, request, redirect, session, jsonify
 from flask_session import Session
 from datetime import datetime
 import pytz
-from sql import * #Used for database connection and management
-from SarvAuth import * #Used for user authentication functions
-from auth import auth_blueprint
+from utils.sql import * #Used for database connection and management
+from utils.SarvAuth import * #Used for user authentication functions
+from utils.auth import auth_blueprint
 
 app = Flask(__name__)
 

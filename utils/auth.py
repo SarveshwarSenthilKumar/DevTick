@@ -2,8 +2,8 @@ from flask import Flask, render_template, request, redirect, session, jsonify, B
 from flask_session import Session
 from datetime import datetime
 import pytz
-from sql import * #Used for database connection and management
-from SarvAuth import * #Used for user authentication functions
+from utils.sql import * #Used for database connection and management
+from utils.SarvAuth import * #Used for user authentication functions
 
 auth_blueprint = Blueprint('auth', __name__)
 
@@ -19,7 +19,7 @@ def login():
 
             password = hash(password)
 
-            db = SQL("sqlite:///users.db")
+            db = SQL("sqlite:///databases/users.db")
             users=db.execute("SELECT * FROM users WHERE username = :username", username=username)
 
             if len(users) == 0:
@@ -52,7 +52,7 @@ def signup():
         return render_template("/auth/signUp.html", error=validName[1])
     fullName = validName[1]
 
-    db = SQL("sqlite:///users.db")
+    db = SQL("sqlite:///databases/users.db")
     results = db.execute("SELECT * FROM users WHERE username = :username", username=username)
 
     if len(results) != 0:
