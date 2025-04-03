@@ -29,7 +29,7 @@ def index():
         if not session.get("name"):
             return render_template("index.html", authentication=True)
         else:
-            return render_template("/auth/loggedin.html")
+            return render_template("homepage.html")
 
 if autoRun:
     if __name__ == '__main__':

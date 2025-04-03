@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevTick - Home</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://i.ibb.co/KjnRR0ky/image-2025-04-02-195727739.png">
+    
+    <style>
+        /* Reset default margins and paddings */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* General Body Styling */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #2f3136;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Header Styling */
+        header {
+            width: 100%;
+            background-color: #1f2024;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            width: 30px;
+            height: 30px;
+        }
+
+        .logout-btn, .theme-toggle-btn {
+            background-color: #7289da;
+            color: white;
+            cursor: pointer;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .logout-btn:hover, .theme-toggle-btn:hover {
+            background-color: #5b6eae;
+        }
+
+        /* Main Container */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            background-color: #36393f;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #7289da;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .button-group button {
+            background-color: #7289da;
+            color: white;
+            cursor: pointer;
+            border: none;
+            padding: 14px 30px;
+            font-size: 18px;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .button-group button:hover {
+            background-color: #5b6eae;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            margin-top: 10px;
+            background-color: #2f3136;
+            color: white;
+            font-size: 16px;
+        }
+
+        .tasks-list, .contacts-list, .api-keys-list, .project-ideas-list {
+            margin-top: 20px;
+            list-style: none;
+            padding: 0;
+        }
+
+        .tasks-list li, .contacts-list li, .api-keys-list li, .project-ideas-list li {
+            padding: 10px;
+            background-color: #40444b;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .urgent-task {
+            background-color: #ff3b3b;
+            border: 1px solid red;
+        }
+
+        .chat-box {
+            width: 100%;
+            height: 300px;
+            border-radius: 8px;
+            background-color: #2f3136;
+            padding: 15px;
+            overflow-y: scroll;
+            margin-top: 30px;
+            border: 1px solid #444;
+        }
+
+        .chat-input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            font-size: 16px;
+            box-sizing: border-box;
+            margin-top: 10px;
+            background-color: #40444b;
+            color: white;
+        }
+
+        /* Dark Mode Styles */
+        .dark-mode {
+            background-color: #2f3136;
+            color: white;
+        }
+
+        .dark-mode header {
+            background-color: #1f2024;
+        }
+
+        .dark-mode .container {
+            background-color: #36393f;
+        }
+
+        .dark-mode .tasks-list li,
+        .dark-mode .contacts-list li,
+        .dark-mode .api-keys-list li,
+        .dark-mode .project-ideas-list li {
+            background-color: #40444b;
+        }
+
+        .dark-mode .search-bar {
+            background-color: #2f3136;
+            color: white;
+        }
+
+        .dark-mode .chat-box {
+            background-color: #2f3136;
+        }
+
+        /* Light Mode Styles */
+        .light-mode {
+            background-color: #ffffff;
+            color: black;
+        }
+
+        .light-mode header {
+            background-color: #f1f1f1;
+        }
+
+        .light-mode .container {
+            background-color: #f9f9f9;
+        }
+
+        .light-mode .tasks-list li,
+        .light-mode .contacts-list li,
+        .light-mode .api-keys-list li,
+        .light-mode .project-ideas-list li {
+            background-color: #e5e5e5;
+        }
+
+        .light-mode .search-bar {
+            background-color: #f9f9f9;
+            color: black;
+        }
+
+        .light-mode .chat-box {
+            background-color: #f9f9f9;
+        }
+
+        .light-mode .DevTickHeader {
+            color: black;
+        }
+    </style>
+</head>
+<body class="dark-mode">
+
+<header>
+    <div class="logo">
+        <img src="https://i.ibb.co/KjnRR0ky/image-2025-04-02-195727739.png" alt="DevTick Logo">
+        <span class="DevTickHeader">DevTick</span>
+    </div>
+    <div>
+        <button class="theme-toggle-btn" onclick="toggleTheme()">☀️</button>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+</header>
+
+<div class="container">
+    <h2 class="section-title">DevTick - Home</h2>
+
+    <!-- Task Management -->
+    <div class="section">
+        <h3 class="section-title">Task Management</h3>
+        <div class="button-group">
+            <button onclick="checkTasks()">Check Tasks</button>
+            <button onclick="createTask()">Create Task</button>
+        </div>
+        <input type="text" class="search-bar" placeholder="Search tasks..." oninput="searchTasks()">
+        <ul class="tasks-list" id="tasks-list">
+            <!-- Tasks will be dynamically added here -->
+        </ul>
+    </div>
+
+    <!-- Contact Management -->
+    <div class="section">
+        <h3 class="section-title">Contact Management</h3>
+        <div class="button-group">
+            <button onclick="checkContacts()">View Contacts</button>
+            <button onclick="createContact()">Create Contact</button>
+        </div>
+        <input type="text" class="search-bar" placeholder="Search contacts..." oninput="searchContacts()">
+        <ul class="contacts-list" id="contacts-list">
+            <!-- Contacts will be dynamically added here -->
+        </ul>
+    </div>
+
+    <!-- API Key Management -->
+    <div class="section">
+        <h3 class="section-title">API Key Management</h3>
+        <div class="button-group">
+            <button onclick="addApiKey()">Add API Key</button>
+            <button onclick="searchApiKey()">Search API Key</button>
+            <button onclick="viewApiKeys()">View All API Keys</button>
+        </div>
+        <input type="text" class="search-bar" placeholder="Search API keys..." oninput="searchApiKeys()">
+        <ul class="api-keys-list" id="api-keys-list">
+            <!-- API Keys will be dynamically added here -->
+        </ul>
+    </div>
+
+    <!-- Project Ideas -->
+    <div class="section">
+        <h3 class="section-title">Project Ideas</h3>
+        <div class="button-group">
+            <button onclick="viewProjectIdeas()">View Ideas</button>
+            <button onclick="createProjectIdea()">Create Idea</button>
+        </div>
+        <input type="text" class="search-bar" placeholder="Search project ideas..." oninput="searchProjectIdeas()">
+        <ul class="project-ideas-list" id="project-ideas-list">
+            <!-- Project Ideas will be dynamically added here -->
+        </ul>
+    </div>
+
+    <!-- AI Chat -->
+    <div class="section">
+        <h3 class="section-title">Chat with AI</h3>
+        <div class="chat-box" id="chat-box"></div>
+        <textarea id="chat-input" class="chat-input" placeholder="Ask me anything about coding..."></textarea>
+    </div>
+</div>
+
+<script>
+    // Toggle dark and light theme
+    function toggleTheme() {
+        const body = document.body;
+        body.classList.toggle('dark-mode');
+        body.classList.toggle('light-mode');
+
+        const button = document.querySelector('.theme-toggle-btn');
+        button.textContent = body.classList.contains('dark-mode') ? '☀️' : '🌙';
+    }
+
+    // Task Management Functions
+    function checkTasks() { alert("Checking tasks..."); }
+    function createTask() { alert("Creating new task..."); }
+    function checkContacts() { alert("Viewing contacts..."); }
+    function createContact() { alert("Creating new contact..."); }
+    function addApiKey() { alert("Adding new API key..."); }
+    function searchApiKey() { alert("Searching API key..."); }
+    function viewApiKeys() { alert("Viewing API keys..."); }
+    function viewProjectIdeas() { alert("Viewing project ideas..."); }
+    function createProjectIdea() { alert("Creating new project idea..."); }
+
+    // Search Functions
+    function searchTasks() { console.log("Searching tasks..."); }
+    function searchContacts() { console.log("Searching contacts..."); }
+    function searchApiKeys() { console.log("Searching API keys..."); }
+    function searchProjectIdeas() { console.log("Searching project ideas..."); }
+
+    // AI Chat Functions
+    document.getElementById('chat-input').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            const chatBox = document.getElementById('chat-box');
+            const message = document.getElementById('chat-input').value;
+            chatBox.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
+            document.getElementById('chat-input').value = '';
+
+            // Simulating AI response
+            setTimeout(() => {
+                chatBox.innerHTML += `<p><strong>AI:</strong> I'm here to help you with coding!</p>`;
+                chatBox.scrollTop = chatBox.scrollHeight; // Scroll to bottom
+            }, 1000);
+        }
+    });
+
+    // Logout Function
+    function logout() {
+        let confirmation = confirm("You are about to log out of DevTick!");
+        if (confirmation) {
+            window.location.href = "/auth/logout";
+        }
+    }
+</script>
+
+</body>
+</html>
