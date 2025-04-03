@@ -12,11 +12,11 @@ fields = [
           "username NOT NULL", 
           "password NOT NULL",
           "dateJoined",
-          "salt",
-          "accountStatus",
-          "role", #hierarchy for possible admins
-          "twoFactorAuth",
-          "lastLogin",
+          "salt", #To Be Implemented
+          "accountStatus", #Allows for bans
+          "role", #hierarchy for possible admins, to be implemented
+          "twoFactorAuth", #To Be Implemented
+          "lastLogin", #To Be Implemented
           "emailAddress",
           "phoneNumber",
           "name", #Full Name

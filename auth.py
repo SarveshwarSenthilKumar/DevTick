@@ -38,10 +38,14 @@ def signup():
     if request.method=="GET":
         return render_template("/auth/signup.html")
             
-    emailAddress = request.form.get("emailaddress").strip().lower()
-    fullName = request.form.get("name").strip()
     username = request.form.get("username").strip().lower()
     password = request.form.get("password").strip()
+
+    emailAddress = request.form.get("email").strip().lower()
+    phoneNumber = request.form.get("phone").strip().lower()
+    fullName = request.form.get("name").strip()
+    dateOfBirth = request.form.get("dob").strip().lower()
+    gender = request.form.get("gender").strip().lower()
 
     validName = verifyName(fullName)
     if not validName[0]:
@@ -65,7 +69,7 @@ def signup():
     password = hash(password)
         
     db = SQL("sqlite:///users.db")
-    db.execute("INSERT INTO users (username, password, emailaddress, name, dateJoined) VALUES (?,?,?,?,?)", username, password, emailAddress, fullName, dateJoined)
+    db.execute("INSERT INTO users (username, password, dateJoined, accountStatus, emailaddress, phoneNumber, name, dateOfBirth, gender) VALUES (?,?,?,?,?,?,?,?,?)", username, password, dateJoined, "Active", emailAddress, phoneNumber, fullName, dateOfBirth, gender)
 
     session["name"] = username
         

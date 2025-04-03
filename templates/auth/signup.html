@@ -120,6 +120,13 @@
         .dark-mode .input-group input[type="submit"]:hover, .dark-mode .nav-button:hover {
             background-color: #006f2b;
         }
+        /* Error message styling */
+        .error {
+            color: red;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
@@ -132,43 +139,52 @@
         <img src="https://i.ibb.co/KjnRR0ky/image-2025-04-02-195727739.png" alt="DevTick Logo" onerror="this.onerror=null; this.src='defaultIcon.png';">
     </div>
     <h2>Sign Up</h2>
-    <form action="/signup" method="POST">
+
+    <!-- Displaying global error message if there is any -->
+    {% if error %}
+        <div class="error">
+            <p>{{error}}</p>
+        </div>
+    {% endif %}
+    
+    <form action="/auth/signup" method="POST">
         <div class="input-group">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
+            <label id="username" for="username">Username:</label>
+            <input required type="text" id="username" name="username" value="{{ request.form.username if request.form.username else '' }}">
         </div>
         <div class="input-group">
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
+            <label id="password" for="password">Password:</label>
+            <input required type="password" id="password" name="password" value="{{ request.form.password if request.form.password else '' }}">
         </div>
         <div class="input-group">
-            <label for="email">Email Address:</label>
-            <input type="email" id="email" name="emailAddress" required>
+            <label id="email" for="email">Email Address:</label>
+            <input required type="email" id="email" name="email" value="{{ request.form.email if request.form.email else '' }}">
         </div>
         <div class="input-group">
-            <label for="phone">Phone Number:</label>
-            <input type="tel" id="phone" name="phoneNumber" required>
+            <label id="phone" for="phone">Phone Number:</label>
+            <input required type="tel" id="phone" name="phone" value="{{ request.form.phone if request.form.phone else '' }}">
         </div>
         <div class="input-group">
-            <label for="name">Full Name:</label>
-            <input type="text" id="name" name="name" required>
+            <label id="name" for="name">Full Name:</label>
+            <input required type="text" id="name" name="name" value="{{ request.form.name if request.form.name else '' }}">
         </div>
         <div class="input-group">
-            <label for="dob">Date of Birth:</label>
-            <input type="date" id="dob" name="dateOfBirth" required>
+            <label id="dob" for="dob">Date of Birth:</label>
+            <input required type="date" id="dob" name="dob" value="{{ request.form.dob if request.form.dob else '' }}">
         </div>
         <div class="input-group">
-            <label for="gender">Gender:</label>
-            <select id="gender" name="gender">
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
+            <label id="gender" for="gender">Gender:</label>
+            <select required id="gender" name="gender">
+                <option value="Male" {% if request.form.gender == 'Male' %} selected {% endif %}>Male</option>
+                <option value="Female" {% if request.form.gender == 'Female' %} selected {% endif %}>Female</option>
+                <option value="Other" {% if request.form.gender == 'Other' %} selected {% endif %}>Other</option>
             </select>
         </div>
         <div class="input-group">
             <input type="submit" value="Sign Up">
         </div>
     </form>
+    
     <!-- Navigation Buttons -->
     <button class="nav-button" onclick="location.href='/auth/login'">Login</button>
     <button class="nav-button" onclick="location.href='./'">Home</button>

@@ -109,6 +109,13 @@
         .dark-mode .input-group input[type="submit"]:hover, .dark-mode .nav-button:hover {
             background-color: #006f2b;
         }
+        /* Error message styling */
+        .error {
+            color: red;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
@@ -121,13 +128,21 @@
         <img src="https://i.ibb.co/KjnRR0ky/image-2025-04-02-195727739.png" alt="DevTick Logo" onerror="this.onerror=null; this.src='defaultIcon.png';">
     </div>
     <h2>Login</h2>
-    <form action="/login" method="POST">
+
+    <!-- Displaying global error message if there is any -->
+    {% if error %}
+        <div class="error">
+            <p>{{error}}</p>
+        </div>
+    {% endif %}
+    
+    <form action="/auth/login" method="POST">
         <div class="input-group">
-            <label for="username">Username:</label>
+            <label id="username" for="username">Username:</label>
             <input type="text" id="username" name="username" required>
         </div>
         <div class="input-group">
-            <label for="password">Password:</label>
+            <label id="password" for="password">Password:</label>
             <input type="password" id="password" name="password" required>
         </div>
         <div class="input-group">
