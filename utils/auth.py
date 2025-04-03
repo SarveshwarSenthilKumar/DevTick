@@ -68,7 +68,7 @@ def signup():
 
     password = hash(password)
         
-    db = SQL("sqlite:///users.db")
+    db = SQL("sqlite:///databases/users.db")
     db.execute("INSERT INTO users (username, password, dateJoined, accountStatus, emailaddress, phoneNumber, name, dateOfBirth, gender) VALUES (?,?,?,?,?,?,?,?,?)", username, password, dateJoined, "Active", emailAddress, phoneNumber, fullName, dateOfBirth, gender)
 
     session["name"] = username

@@ -1,5 +1,6 @@
 /flask_session
 /__pycache__
+/utils/__pycache__
 
 users.db
 apikeys.db
