@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message Page - DevTick</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://i.ibb.co/KjnRR0ky/image-2025-04-02-195727739.png">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #2f3136;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        header {
+            width: 100%;
+            background-color: #1f2024;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo img {
+            width: 30px;
+            height: 30px;
+        }
+
+        .theme-toggle-btn, .home-btn {
+            background-color: #7289da;
+            color: white;
+            cursor: pointer;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .theme-toggle-btn:hover, .home-btn:hover {
+            background-color: #5b6eae;
+        }
+
+        .container {
+            background-color: #36393f;
+            padding: 30px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .container h2 {
+            margin-bottom: 20px;
+            color: #7289da;
+        }
+
+        .container p {
+            font-size: 1.2rem;
+            color: #e1e4e8;
+            margin-bottom: 20px;
+        }
+
+        .light-mode input, .light-mode select, .light-mode textarea {
+            background-color: white;
+            color: black;
+        }
+
+        .light-mode .container {
+            background-color: #f9f9f9;
+        }
+
+        .dark-mode {
+            background-color: #2f3136;
+            color: white;
+        }
+
+        .dark-mode header {
+            background-color: #1f2024;
+        }
+
+        .dark-mode .container {
+            background-color: #36393f;
+        }
+
+        .light-mode {
+            background-color: #ffffff;
+            color: black;
+        }
+
+        .light-mode header {
+            background-color: #f1f1f1;
+        }
+
+        .light-mode .container {
+            background-color: #f9f9f9;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            background-color: #7289da;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: #5b6eae;
+        }
+
+    </style>
+    
+    <script>
+        // Theme toggle
+        function toggleTheme() {
+            const body = document.body;
+            body.classList.toggle('dark-mode');
+            body.classList.toggle('light-mode');
+            
+            const button = document.querySelector('.theme-toggle-btn');
+            button.textContent = body.classList.contains('dark-mode') ? '☀️' : '🌙';
+        }
+
+        // Go to home
+        function goHome() {
+            window.location.href = "/";
+        }
+    </script>
+</head>
+<body class="dark-mode">
+
+<header>
+    <div class="logo">
+        <img src="https://i.ibb.co/KjnRR0ky/image-2025-04-02-195727739.png" alt="DevTick Logo">
+        <span class="DevTickHeader">DevTick</span>
+    </div>
+    <div>
+        <button class="theme-toggle-btn" onclick="toggleTheme()">☀️</button>
+        <button class="home-btn" onclick="goHome()">Home</button>
+    </div>
+</header>
+
+<div class="container">
+    <h2>Message Page</h2>
+    <p>
+        {% for sentence in sentences %}
+        {{ sentence }}<br>
+        {% endfor %}
+    </p>
+    <p>You can go back to the home page or toggle the theme using the buttons above.</p>
+</div>
+
+</body>
+</html>

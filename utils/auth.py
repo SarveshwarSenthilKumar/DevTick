@@ -27,6 +27,7 @@ def login():
             user = users[0]
             if user["password"] == password:
                 session["name"] = username
+                session["id"] = user["id"]
                 return redirect("/")
 
             return render_template("/auth/login.html", error="You have entered an incorrect password! Please try again!")

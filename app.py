@@ -6,6 +6,7 @@ import pytz
 from utils.sql import * #Used for database connection and management
 from utils.SarvAuth import * #Used for user authentication functions
 from utils.auth import auth_blueprint
+from utils.tasks import tasks_blueprint
 
 app = Flask(__name__)
 
@@ -20,7 +21,9 @@ authentication = True #Change to False if you want to disable user authenticatio
 if authentication:
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
 
-#This route is the base route for the website which renders the index.html file
+app.register_blueprint(tasks_blueprint, url_prefix='/tasks')
+
+#This route is the base route for the website which renders the landing page, then homepage if logged in
 @app.route("/", methods=["GET", "POST"])
 def index():
     if not authentication:
