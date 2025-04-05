@@ -25,7 +25,7 @@ fields = [
         ]
 
 
-#Easily converatble to MySQL or other databases due to iterative strategy as opposed to hardcoding the db create string, also improves readability and ease of maintenance and adding new fields
+#Easily convertible to MySQL or other databases due to iterative strategy as opposed to hardcoding the db create string, also improves readability and ease of maintenance and adding new fields
 
 dbCreateString = "CREATE TABLE users (id INTEGER, "
 
