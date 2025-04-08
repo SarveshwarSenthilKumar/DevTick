@@ -51,4 +51,4 @@ def getTasks():
             task["additionalFields"] = json.loads(task["additionalFields"])
             task["additionalValues"] = json.loads(task["additionalValues"])
 
-        return tasks
+        return render_template("viewTasks.html", tasks=tasks)

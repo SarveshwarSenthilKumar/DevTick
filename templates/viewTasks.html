@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Tasks - DevTick</title>
+    <link rel="icon" type="image/png" href="https://i.ibb.co/KjnRR0ky/image-2025-04-02-195727739.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #2f3136;
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        header {
+            width: 100%;
+            background-color: #1f2024;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            width: 30px;
+            height: 30px;
+        }
+
+        .theme-toggle-btn, .logout-btn {
+            background-color: #7289da;
+            color: white;
+            cursor: pointer;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .theme-toggle-btn:hover, .logout-btn:hover {
+            background-color: #5b6eae;
+        }
+
+        h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #7289da;
+        }
+
+        .task-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 20px;
+        }
+
+        .task-card {
+            background-color: #36393f;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .task-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .task-desc {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #ccc;
+        }
+
+        ul.task-details {
+            list-style: none;
+            padding-left: 0;
+            margin: 10px 0;
+            line-height: 1.6;
+            color: #bbb;
+        }
+
+        ul.task-details li strong {
+            color: #ccc;
+        }
+
+        .urgent {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+
+        .task-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .task-actions button {
+            flex: 1;
+            padding: 10px;
+            font-size: 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background-color: #7289da;
+            color: white;
+            transition: background-color 0.3s;
+        }
+
+        .task-actions button:hover {
+            background-color: #5b6eae;
+        }
+
+        .top-actions {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .top-actions button {
+            background-color: #7289da;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+
+        .top-actions button:hover {
+            background-color: #5b6eae;
+        }
+
+        .additional-section {
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid #555;
+        }
+
+        .additional-section h4 {
+            margin-bottom: 10px;
+            color: #ccc;
+        }
+
+        .additional-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .additional-section li {
+            margin-bottom: 5px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <img src="https://i.ibb.co/KjnRR0ky/image-2025-04-02-195727739.png" alt="DevTick Logo">
+        <span class="DevTickHeader">DevTick</span>
+    </div>
+    <div>
+        <button class="theme-toggle-btn" onclick="toggleTheme()">☀️</button>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+</header>
+
+<h2>Your Tasks</h2>
+
+<div class="top-actions">
+    <button onclick="window.location.href='/tasks/createtask'">+ New Task</button>
+    <button onclick="window.location.href='/'">🏠 Home</button>
+</div>
+
+<div class="task-container">
+    {% for task in tasks %}
+    <div class="task-card">
+        <div class="task-title">{{ task.title }}</div>
+        <div class="task-desc">{{ task.description }}</div>
+        <ul class="task-details">
+            <li><strong>Status:</strong> {{ task.status }}</li>
+            <li><strong>Priority:</strong> {{ task.priority }}</li>
+            <li><strong>Due Date:</strong> {{ task.dueDate }}</li>
+            <li><strong>Created At:</strong> {{ task.createdAt }}</li>
+            <li><strong>Completed At:</strong> {{ task.completedAt }}</li>
+            <li><strong>Urgency:</strong> {% if task.urgent %}<span class="urgent">Urgent</span>{% else %}Not Urgent{% endif %}</li>
+            <li><strong>Assigned To:</strong> {{ task.assignedTo }}</li>
+            <li><strong>Contributors:</strong> {{ task.contributors }}</li>
+            <li><strong>Category:</strong> {{ task.category }}</li>
+            <li><strong>Notes:</strong> {{ task.notes }}</li>
+            <li><strong>Project:</strong> {{ task.project }}</li>
+            <li><strong>Owned By:</strong> {{ task.ownedBy }}</li>
+        </ul>
+
+        {% if task.additionalFields and task.additionalValues %}
+        <div class="additional-section">
+            <h4>Additional Fields:</h4>
+            <ul>
+                {% for i in range(task.additionalFields|length) %}
+                    <li>
+                        <strong>{{ task.additionalFields[i] }}:</strong>
+                        {{ task.additionalValues[i] if i < task.additionalValues|length else 'N/A' }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+
+        <div class="task-actions">
+            <form method="POST" action="/tasks/deletetask/{{ task.id }}">
+                <button type="submit">Delete</button>
+            </form>
+            <form method="GET" action="/tasks/edittask/{{ task.id }}">
+                <button type="submit">Edit</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    function toggleTheme() {
+        const body = document.body;
+        body.classList.toggle('dark-mode');
+        body.classList.toggle('light-mode');
+        const button = document.querySelector('.theme-toggle-btn');
+        button.textContent = body.classList.contains('dark-mode') ? '☀️' : '🌙';
+    }
+
+    function logout() {
+        if (confirm("You are about to log out of DevTick!")) {
+            window.location.href = "/auth/logout";
+        }
+    }
+</script>
+
+</body>
+</html>

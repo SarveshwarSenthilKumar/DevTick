@@ -73,6 +73,7 @@ def signup():
     db.execute("INSERT INTO users (username, password, dateJoined, accountStatus, emailaddress, phoneNumber, name, dateOfBirth, gender) VALUES (?,?,?,?,?,?,?,?,?)", username, password, dateJoined, "Active", emailAddress, phoneNumber, fullName, dateOfBirth, gender)
 
     session["name"] = username
+    session["id"] = user["id"]
         
     return redirect("/")
     
