@@ -116,3 +116,40 @@ def delete_task(task_id):
         task["additionalValues"] = json.loads(task["additionalValues"])
 
     return render_template("viewTasks.html", tasks=tasks, error="Task has been deleted successfully!", success=True)
+
+@tasks_blueprint.route("/recovertask/<int:task_id>", methods=["GET"])
+def recover_task(task_id):
+    if not session.get("name"):
+        return redirect("/")
+    
+    db = SQL("sqlite:///databases/tasks.db")
+    
+    task = db.execute("SELECT id FROM tasks WHERE id = :id AND ownedBy = :owner", 
+                     id=task_id, owner=session.get("id"))
+    if not task:
+        db = SQL("sqlite:///databases/tasks.db")
+        tasks = db.execute("SELECT * FROM tasks WHERE ownedBy = :id", id=session.get("id"))
+
+        for task in tasks:
+            task["additionalFields"] = json.loads(task["additionalFields"])
+            task["additionalValues"] = json.loads(task["additionalValues"])
+
+        return render_template("viewTasks.html", tasks=tasks, error="Task cannot be found!")
+    
+    else:
+        tz_NY = pytz.timezone('America/New_York') 
+        now = datetime.now(tz_NY)
+        recoveredOn = now.strftime("%d/%m/%Y %H:%M:%S")
+
+        status = "Recovered on " + recoveredOn
+
+        db.execute("UPDATE tasks SET status = :status WHERE id = :id AND ownedBy = :owner", status=status, id=task_id, owner=session.get("id"))
+
+    db = SQL("sqlite:///databases/tasks.db")
+    tasks = db.execute("SELECT * FROM tasks WHERE ownedBy = :id", id=session.get("id"))
+
+    for task in tasks:
+        task["additionalFields"] = json.loads(task["additionalFields"])
+        task["additionalValues"] = json.loads(task["additionalValues"])
+
+    return render_template("viewTasks.html", tasks=tasks, error="Task has been recovered successfully!", success=True)
