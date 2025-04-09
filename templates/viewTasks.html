@@ -8,6 +8,26 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
+        :root {
+            --bg-color: #36393f;
+            --text-color: white;
+            --input-bg: #444;
+            --input-border: #666;
+            --field-bg: #40444b;
+            --field-input-bg: #2f3136;
+            --field-input-border: #202225;
+        }
+
+        body.light-mode {
+            --bg-color: white;
+            --text-color: #333;
+            --input-bg: #f0f0f0;
+            --input-border: #ddd;
+            --field-bg: #f0f0f0;
+            --field-input-bg: white;
+            --field-input-border: #ddd;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #2f3136;
@@ -205,6 +225,39 @@
             transition: all 0.3s;
         }
 
+        .edit-mode {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--bg-color);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 10;
+            overflow-y: auto;
+            color: var(--text-color);
+        }
+
+        .edit-mode input, 
+        .edit-mode select, 
+        .edit-mode textarea {
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border: 1px solid var(--input-border);
+        }
+
+        .additional-field-container {
+            background: var(--field-bg);
+        }
+
+        .additional-field-group input {
+            background: var(--field-input-bg);
+            border: 1px solid var(--field-input-border);
+            color: var(--text-color);
+        }
+
         .save-btn {
             background-color: #43b581;
             color: white;
@@ -287,6 +340,90 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Light Mode Styles */
+        body.light-mode {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        body.light-mode header {
+            background-color: #fff;
+            color: #333;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        body.light-mode .task-card {
+            background-color: #fff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        body.light-mode .task-title,
+        body.light-mode .task-desc {
+            color: #333;
+        }
+
+        body.light-mode .task-desc {
+            color: #666;
+        }
+
+        body.light-mode ul.task-details {
+            color: #666;
+        }
+
+        body.light-mode ul.task-details li strong {
+            color: #555;
+        }
+
+        body.light-mode .edit-mode input,
+        body.light-mode .edit-mode select,
+        body.light-mode .edit-mode textarea {
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        body.light-mode .additional-field-container {
+            background: #f0f0f0;
+        }
+
+        body.light-mode .additional-field-group input {
+            background: #fff;
+            border: 1px solid #ddd;
+            color: #333;
+        }
+
+        body.light-mode .error-message {
+            color: #fff;
+        }
+        .edit-buttons button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            color: white; /* Keep text white for better contrast */
+        }
+
+        .save-btn {
+            background-color: #43b581;
+        }
+
+        .save-btn:hover {
+            background-color: #3aa371;
+            transform: translateY(-2px);
+        }
+
+        .cancel-btn {
+            background-color: #f04747;
+        }
+
+        .cancel-btn:hover {
+            background-color: #d83c3c;
+            transform: translateY(-2px);
         }
     </style>
 </head>
@@ -475,11 +612,44 @@
 
     function toggleTheme() {
         const body = document.body;
-        body.classList.toggle('dark-mode');
-        body.classList.toggle('light-mode');
-        const button = document.querySelector('.theme-toggle-btn');
-        button.textContent = body.classList.contains('dark-mode') ? '☀️' : '🌙';
+        const isDarkMode = body.classList.contains('dark-mode');
+        
+        if (isDarkMode) {
+            body.classList.remove('dark-mode');
+            body.classList.add('light-mode');
+            localStorage.setItem('theme', 'light');
+            document.querySelector('.theme-toggle-btn').textContent = '🌙';
+        } else {
+            body.classList.remove('light-mode');
+            body.classList.add('dark-mode');
+            localStorage.setItem('theme', 'dark');
+            document.querySelector('.theme-toggle-btn').textContent = '☀️';
+        }
+        
+        // Force redraw of any open edit modes
+        document.querySelectorAll('.edit-mode').forEach(editMode => {
+            editMode.style.display = 'none';
+            setTimeout(() => {
+                if (editMode.parentElement.classList.contains('editing')) {
+                    editMode.style.display = 'block';
+                }
+            }, 10);
+        });
     }
+
+    // Check for saved theme preference on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        const body = document.body;
+        
+        if (savedTheme === 'light') {
+            body.classList.add('light-mode');
+            document.querySelector('.theme-toggle-btn').textContent = '🌙';
+        } else {
+            body.classList.add('dark-mode');
+            document.querySelector('.theme-toggle-btn').textContent = '☀️';
+        }
+    });
 
     function logout() {
         if (confirm("You are about to log out of DevTick!")) {
