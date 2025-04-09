@@ -262,6 +262,32 @@
         .remove-field-btn:hover {
             background: #677bc4;
         }
+        .error-message {
+            background-color: #f04747;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .close-error {
+            cursor: pointer;
+            font-size: 20px;
+            margin-left: 10px;
+        }
+
+        .close-error:hover {
+            color: #ddd;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
@@ -276,6 +302,20 @@
         <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
 </header>
+
+{% if error %}
+    {% if success %}
+    <div class="error-message" style="background-color: #43b581;">
+        {{ error }}
+        <span class="close-error" onclick="this.parentElement.style.display='none'">×</span>
+    </div>
+    {% else %}
+    <div class="error-message">
+        {{ error }}
+        <span class="close-error" onclick="this.parentElement.style.display='none'">×</span>
+    </div>
+    {% endif %}
+{% endif %}
 
 <h2>Your Tasks</h2>
 

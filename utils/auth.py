@@ -72,8 +72,11 @@ def signup():
     db = SQL("sqlite:///databases/users.db")
     db.execute("INSERT INTO users (username, password, dateJoined, accountStatus, emailaddress, phoneNumber, name, dateOfBirth, gender) VALUES (?,?,?,?,?,?,?,?,?)", username, password, dateJoined, "Active", emailAddress, phoneNumber, fullName, dateOfBirth, gender)
 
+    db = SQL("sqlite:///databases/users.db")
+    users=db.execute("SELECT * FROM users WHERE username = :username", username=username)
+
     session["name"] = username
-    session["id"] = user["id"]
+    session["id"] = users[0]["id"]
         
     return redirect("/")
     

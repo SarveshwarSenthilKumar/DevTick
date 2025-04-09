@@ -60,46 +60,28 @@ def edit_task(task_id):
     
     db = SQL("sqlite:///databases/tasks.db")
     
-    # Verify task exists and belongs to user
     task = db.execute("SELECT id FROM tasks WHERE id = :id AND ownedBy = :owner", 
                      id=task_id, owner=session.get("id"))
     if not task:
-        return jsonify({"success": False, "message": "Task not found or unauthorized"}), 404
+        db = SQL("sqlite:///databases/tasks.db")
+        tasks = db.execute("SELECT * FROM tasks WHERE ownedBy = :id", id=session.get("id"))
+
+        for task in tasks:
+            task["additionalFields"] = json.loads(task["additionalFields"])
+            task["additionalValues"] = json.loads(task["additionalValues"])
+
+        return render_template("viewTasks.html", tasks=tasks, error="Task cannot be found!")
     
-    # Process form data
     additional_fields = request.form.getlist('additionalFields[]')
     additional_values = request.form.getlist('additionalValues[]')
     
-    # Convert urgent to boolean
-    urgent = request.form.get('urgent', 'False') == 'True'
+    db.execute("UPDATE tasks SET title = :title, description = :description, status = :status, priority = :priority, dueDate = :dueDate, assignedTo = :assignedTo,category = :category, notes = :notes, additionalFields = :additionalFields, additionalValues = :additionalValues WHERE id = :id AND ownedBy = :owner", title=request.form.get("title"), description=request.form.get("description"), status=request.form.get("status"), priority=request.form.get("priority"), dueDate=request.form.get("dueDate"), assignedTo=request.form.get("assignedTo"), category=request.form.get("category"), notes=request.form.get("notes"), additionalFields=json.dumps(additional_fields), additionalValues=json.dumps(additional_values), id=task_id, owner=session.get("id"))
     
-    # Update task in database
-    db.execute("""
-        UPDATE tasks SET 
-            title = :title,
-            description = :description,
-            status = :status,
-            priority = :priority,
-            dueDate = :dueDate,
-            assignedTo = :assignedTo,
-            category = :category,
-            notes = :notes,
-            additionalFields = :additionalFields,
-            additionalValues = :additionalValues
-        WHERE id = :id AND ownedBy = :owner
-        """,
-        title=request.form.get("title"),
-        description=request.form.get("description"),
-        status=request.form.get("status"),
-        priority=request.form.get("priority"),
-        dueDate=request.form.get("dueDate"),
-        assignedTo=request.form.get("assignedTo"),
-        category=request.form.get("category"),
-        notes=request.form.get("notes"),
-        additionalFields=json.dumps(additional_fields),
-        additionalValues=json.dumps(additional_values),
-        id=task_id,
-        owner=session.get("id")
-    )
-    
-    return jsonify({"success": True, "message": "Task updated successfully"})
+    db = SQL("sqlite:///databases/tasks.db")
+    tasks = db.execute("SELECT * FROM tasks WHERE ownedBy = :id", id=session.get("id"))
+
+    for task in tasks:
+        task["additionalFields"] = json.loads(task["additionalFields"])
+        task["additionalValues"] = json.loads(task["additionalValues"])
+
+    return render_template("viewTasks.html", tasks=tasks, error="Task has been updated successfully!", success=True)
