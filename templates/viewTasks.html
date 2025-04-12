@@ -513,6 +513,11 @@
 </form>
 
 <div class="top-actions">
+    {% if not deleted %}
+    <button onclick="window.location.href='/tasks/checkdeleted'">🗑️ Check Deleted Tasks</button>
+    {% else %}
+    <button onclick="window.location.href='/tasks/getTasks'">Check Active Tasks</button>
+    {% endif %}
     <button onclick="window.location.href='/tasks/createtask'">+ New Task</button>
     <button onclick="window.location.href='/'">🏠 Home</button>
 </div>
@@ -542,12 +547,20 @@
             {% endfor %}
         </ul>
         
+        {% if not deleted %}
         <div class="task-actions">
             <button onclick="editTask({{ task.id }})">Edit</button>
             <form method="POST" action="/tasks/deletetask/{{ task.id }}">
                 <button type="submit">Delete</button>
             </form>
         </div>
+        {% else %}
+        <div class="task-actions">
+            <form method="POST" action="/tasks/recovertask/{{ task.id }}">
+                <button type="submit">Recover</button>
+            </form>
+        </div>
+        {% endif %}
         
         <div class="edit-mode" id="edit-mode-{{ task.id }}">
             <form method="POST" action="/tasks/edittask/{{ task.id }}" id="edit-form-{{ task.id }}">
