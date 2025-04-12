@@ -33,6 +33,10 @@ def index():
             return render_template("index.html", authentication=True)
         else:
             return render_template("homepage.html")
+        
+@app.route("/templates", methods=["GET", "POST"])
+def templates():
+    return render_template("templates.html")
 
 if autoRun:
     if __name__ == '__main__':
