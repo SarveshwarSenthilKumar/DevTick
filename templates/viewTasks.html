@@ -527,6 +527,7 @@
     <div class="task-card" id="task-card-{{ task.id }}">
         <div class="task-title" id="task-title-{{ task.id }}">{{ task.title }}</div>
         <div class="task-desc" id="task-desc-{{ task.id }}">{{ task.description }}</div>
+
         <ul class="task-details">
             <li><strong>Status:</strong> <span>{{ task.status }}</span></li>
             <li><strong>Priority:</strong> <span>{{ task.priority }}</span></li>
@@ -535,80 +536,75 @@
             <li><strong>Assigned To:</strong> <span>{{ task.assignedTo }}</span></li>
             <li><strong>Category:</strong> <span>{{ task.category }}</span></li>
             <li><strong>Notes:</strong> <span>{{ task.notes }}</span></li>
-            
-            <!-- Additional Fields in View Mode -->
+
             {% for i in range(task.additionalFields|length) %}
                 {% if task.additionalFields[i] or task.additionalValues[i] %}
                 <li>
-                    <strong>{{ task.additionalFields[i] if task.additionalFields[i] else "Field" }}:</strong>
-                    <span>{{ task.additionalValues[i] if task.additionalValues[i] else "" }}</span>
+                    <strong>{{ task.additionalFields[i] or "Field" }}:</strong>
+                    <span>{{ task.additionalValues[i] or "" }}</span>
                 </li>
                 {% endif %}
             {% endfor %}
         </ul>
-        
-        {% if not deleted %}
+
         <div class="task-actions">
-            <button onclick="editTask({{ task.id }})">Edit</button>
-            <form method="POST" action="/tasks/deletetask/{{ task.id }}">
-                <button type="submit">Delete</button>
-            </form>
+            {% if not deleted %}
+                <button onclick="editTask({{ task.id }})" class="action-btn">Edit</button>
+
+                <form method="POST" action="/tasks/deletetask/{{ task.id }}" class="inline-form">
+                    <button type="submit" class="action-btn delete-btn">Delete</button>
+                </form>
+
+                {% if task.status != 'Finished' %}
+                <form method="POST" action="/tasks/finishtask/{{ task.id }}" class="inline-form">
+                    <button type="submit" class="action-btn finish-btn">Finish</button>
+                </form>
+                {% endif %}
+            {% else %}
+                <form method="POST" action="/tasks/recovertask/{{ task.id }}" class="inline-form">
+                    <button type="submit" class="action-btn recover-btn">Recover</button>
+                </form>
+            {% endif %}
         </div>
-        {% else %}
-        <div class="task-actions">
-            <form method="POST" action="/tasks/recovertask/{{ task.id }}">
-                <button type="submit">Recover</button>
-            </form>
-        </div>
-        {% endif %}
-        
+
         <div class="edit-mode" id="edit-mode-{{ task.id }}">
             <form method="POST" action="/tasks/edittask/{{ task.id }}" id="edit-form-{{ task.id }}">
                 <label for="title-{{ task.id }}">Title:</label>
                 <input type="text" id="title-{{ task.id }}" name="title" value="{{ task.title }}" required>
-                
+
                 <label for="description-{{ task.id }}">Description:</label>
                 <textarea id="description-{{ task.id }}" name="description">{{ task.description }}</textarea>
-                
+
                 <label for="status-{{ task.id }}">Status:</label>
                 <input type="text" id="status-{{ task.id }}" name="status" value="{{ task.status }}">
-                
+
                 <label for="priority-{{ task.id }}">Priority:</label>
                 <input type="text" id="priority-{{ task.id }}" name="priority" value="{{ task.priority }}">
-                
+
                 <label for="dueDate-{{ task.id }}">Due Date:</label>
                 <input type="date" id="dueDate-{{ task.id }}" name="dueDate" value="{{ task.dueDate }}">
-                
+
                 <label for="assignedTo-{{ task.id }}">Assigned To:</label>
                 <input type="text" id="assignedTo-{{ task.id }}" name="assignedTo" value="{{ task.assignedTo }}">
-                
+
                 <label for="category-{{ task.id }}">Category:</label>
                 <input type="text" id="category-{{ task.id }}" name="category" value="{{ task.category }}">
-                
+
                 <label for="notes-{{ task.id }}">Notes:</label>
                 <input type="text" id="notes-{{ task.id }}" name="notes" value="{{ task.notes }}">
-                
-                <!-- Additional Fields in Edit Mode -->
+
                 <div class="additional-field-container">
                     <h4>Additional Fields:</h4>
                     {% for i in range(task.additionalFields|length) %}
                     <div class="additional-field-group">
-                        <input type="text" 
-                               name="additionalFields[]" 
-                               value="{{ task.additionalFields[i] }}"
-                               placeholder="Field name">
-                        
-                        <input type="text" 
-                               name="additionalValues[]" 
-                               value="{{ task.additionalValues[i] }}"
-                               placeholder="Field value">
-                        
+                        <input type="text" name="additionalFields[]" value="{{ task.additionalFields[i] }}" placeholder="Field name">
+                        <input type="text" name="additionalValues[]" value="{{ task.additionalValues[i] }}" placeholder="Field value">
                         <button type="button" class="remove-field-btn" onclick="removeAdditionalField(this)">Remove</button>
                     </div>
                     {% endfor %}
                     <button type="button" class="add-field-btn" onclick="addAdditionalField(this)">+ Add Field</button>
                 </div>
-                
+
                 <div class="edit-buttons">
                     <button type="submit" class="save-btn">💾 Save</button>
                     <button type="button" class="cancel-btn" onclick="cancelEdit({{ task.id }})">✖ Cancel</button>
