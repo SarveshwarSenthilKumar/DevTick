@@ -245,6 +245,14 @@
 <div class="container">
     <h2 class="section-title">DevTick - Home</h2>
 
+    <div class="section">
+        <h3 class="section-title" style="margin-bottom: 10px;">Templates</h3>
+        <h3 class="section-title" style="font-size: 20px; color: #5b6fc7; margin-left: 10%; margin-right: 10%;">View DevTick's vast and diverse collection of developer templates consisting of more than 100 templates across the categories of Frontend, Backend, Full-Stack, Mobile, AI/Machine Learning, and DevOps development</h3>
+        <div class="button-group">
+            <button onclick="viewTemplates()">View Templates</button>
+        </div>
+    </div>
+
     <!-- Task Management -->
     <div class="section">
         <h3 class="section-title">Task Management</h3>
@@ -316,6 +324,9 @@
         const button = document.querySelector('.theme-toggle-btn');
         button.textContent = body.classList.contains('dark-mode') ? '☀️' : '🌙';
     }
+
+    // View Templates Function
+    function viewTemplates() { window.location.href = "/templates"; }
 
     // Task Management Functions
     function checkTasks() { window.location.href = "/tasks/getTasks"; }
