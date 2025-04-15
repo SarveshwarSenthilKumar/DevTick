@@ -148,6 +148,20 @@ def viewdeleted():
 
     return render_template("viewTasks.html", tasks=tasks, deleted=True)
 
+@tasks_blueprint.route("/checkfinished", methods=["GET", "POST"])
+def checkfinished():
+    if not session.get("name"):
+        return redirect("/")
+    
+    db = SQL("sqlite:///databases/tasks.db")
+    tasks = db.execute("SELECT * FROM tasks WHERE ownedBy = :id AND status = :status", id=session.get("id"), status="Finished")
+
+    for task in tasks:
+        task["additionalFields"] = json.loads(task["additionalFields"])
+        task["additionalValues"] = json.loads(task["additionalValues"])
+
+    return render_template("viewTasks.html", tasks=tasks, deleted=True)
+
 @tasks_blueprint.route("/deletetask/<int:task_id>", methods=["POST"])
 def delete_task(task_id):
     if not session.get("name"):
