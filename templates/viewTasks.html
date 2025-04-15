@@ -518,6 +518,9 @@
     {% else %}
     <button onclick="window.location.href='/tasks/getTasks'">Check Active Tasks</button>
     {% endif %}
+    {% if not finished %}
+    <button onclick="window.location.href='/tasks/checkfinished'">✅ Check Finished Tasks</button>
+    {% endif %}
     <button onclick="window.location.href='/tasks/createtask'">+ New Task</button>
     <button onclick="window.location.href='/'">🏠 Home</button>
 </div>
