@@ -260,7 +260,7 @@
             <button onclick="checkTasks()">Check Tasks</button>
             <button onclick="createTask()">Create Task</button>
         </div>
-        <input type="text" class="search-bar" placeholder="Search tasks..." oninput="searchTasks()">
+        <input type="text" class="search-bar" placeholder="Search tasks..." oninput="window.location.href = '/tasks/getTasks'">
         <ul class="tasks-list" id="tasks-list">
             <!-- Tasks will be dynamically added here -->
         </ul>
