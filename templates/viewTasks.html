@@ -405,7 +405,7 @@
             cursor: pointer;
             font-weight: bold;
             transition: all 0.3s;
-            color: white; /* Keep text white for better contrast */
+            color: white;
         }
 
         .save-btn {
@@ -431,6 +431,7 @@
             margin: 0 auto 20px;
             max-width: 600px;
             gap: 10px;
+            width: 100%;
         }
 
         .search-container input {
@@ -443,6 +444,7 @@
             font-size: 16px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             transition: all 0.3s;
+            min-width: 0;
         }
 
         .search-container input:focus {
@@ -460,6 +462,7 @@
             cursor: pointer;
             font-size: 16px;
             transition: all 0.3s;
+            white-space: nowrap;
         }
 
         .search-container button:hover {
@@ -474,6 +477,83 @@
 
         body.light-mode .search-container input:focus {
             background-color: #e0e0e0;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .search-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .search-container button {
+                width: 100%;
+            }
+            
+            .top-actions {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .top-actions button {
+                width: 100%;
+                margin: 0;
+            }
+            
+            .task-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .logo {
+                justify-content: center;
+            }
+            
+            .theme-toggle-btn, .logout-btn {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+
+        /* Loading indicator */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #7289da;
+            font-size: 18px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #7289da;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* No results message */
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #bbb;
+            font-size: 18px;
+            grid-column: 1 / -1;
         }
     </style>
 </head>
@@ -506,11 +586,11 @@
 
 <h2>Your Tasks</h2>
 
-<form method="GET" action="/tasks/searchtasks" class="search-container">
-    <input type="text" name="q" placeholder="Search tasks..." required>
-    <button type="submit">Search</button>
-    <button type="button" onclick="window.location.href='/tasks/getTasks'">Clear</button>
-</form>
+<div class="search-container">
+    <input type="text" id="search-input" placeholder="Search tasks..." required>
+    <button type="button" id="search-btn">Search</button>
+    <button type="button" id="clear-search-btn">Clear</button>
+</div>
 
 <div class="top-actions">
     {% if not deleted %}
@@ -525,7 +605,12 @@
     <button onclick="window.location.href='/'">🏠 Home</button>
 </div>
 
-<div class="task-container">
+<div class="loading">
+    <div class="spinner"></div>
+    <p>Searching tasks...</p>
+</div>
+
+<div class="task-container" id="task-container">
     {% for task in tasks %}
     <div class="task-card" id="task-card-{{ task.id }}">
         <div class="task-title" id="task-title-{{ task.id }}">{{ task.title }}</div>
@@ -619,6 +704,111 @@
 </div>
 
 <script>
+    // Store all tasks initially
+    let allTasks = [];
+
+    // Get all tasks when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        // Extract tasks from the HTML (they're already rendered server-side)
+        const taskCards = document.querySelectorAll('.task-card');
+        allTasks = Array.from(taskCards).map(card => {
+            return {
+                element: card,
+                title: card.querySelector('.task-title').textContent.toLowerCase(),
+                description: card.querySelector('.task-desc').textContent.toLowerCase(),
+                details: card.querySelector('.task-details').textContent.toLowerCase()
+            };
+        });
+        
+        // Add event listener for Enter key in search input
+        document.getElementById('search-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+        
+        // Add click event for search button
+        document.getElementById('search-btn').addEventListener('click', performSearch);
+        
+        // Add click event for clear button
+        document.getElementById('clear-search-btn').addEventListener('click', clearSearch);
+    });
+
+    function performSearch() {
+        const query = document.getElementById('search-input').value.trim().toLowerCase();
+        
+        if (query.length === 0) {
+            clearSearch();
+            return;
+        }
+        
+        showLoading(true);
+        
+        // Hide all tasks first
+        allTasks.forEach(task => {
+            task.element.style.display = 'none';
+        });
+        
+        // Filter tasks that match the search query
+        const matchingTasks = allTasks.filter(task => {
+            return task.title.includes(query) || 
+                   task.description.includes(query) || 
+                   task.details.includes(query);
+        });
+        
+        // Show matching tasks
+        matchingTasks.forEach(task => {
+            task.element.style.display = 'block';
+        });
+        
+        // Show no results message if no matches
+        const taskContainer = document.getElementById('task-container');
+        if (matchingTasks.length === 0) {
+            // Remove any existing no-results message
+            const existingNoResults = document.querySelector('.no-results');
+            if (existingNoResults) {
+                existingNoResults.remove();
+            }
+            
+            const noResults = document.createElement('div');
+            noResults.className = 'no-results';
+            noResults.textContent = 'No tasks found matching your search.';
+            taskContainer.appendChild(noResults);
+        } else {
+            // Remove any existing no-results message
+            const existingNoResults = document.querySelector('.no-results');
+            if (existingNoResults) {
+                existingNoResults.remove();
+            }
+        }
+        
+        showLoading(false);
+    }
+
+    function clearSearch() {
+        document.getElementById('search-input').value = '';
+        
+        // Show all tasks
+        allTasks.forEach(task => {
+            task.element.style.display = 'block';
+        });
+        
+        // Remove any no-results message
+        const existingNoResults = document.querySelector('.no-results');
+        if (existingNoResults) {
+            existingNoResults.remove();
+        }
+    }
+
+    function showLoading(show) {
+        const loadingIndicator = document.querySelector('.loading');
+        if (show) {
+            loadingIndicator.style.display = 'block';
+        } else {
+            loadingIndicator.style.display = 'none';
+        }
+    }
+
     function editTask(taskId) {
         // Highlight the card being edited
         document.getElementById(`task-card-${taskId}`).classList.add('editing');
