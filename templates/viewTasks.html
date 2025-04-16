@@ -555,127 +555,6 @@
             font-size: 18px;
             grid-column: 1 / -1;
         }
-
-        .filter-container {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .project-filter {
-            background-color: #40444b;
-            border-radius: 10px;
-            padding: 15px;
-            flex: 1;
-            min-width: 250px;
-            max-width: 300px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .project-filter h3 {
-            color: #7289da;
-            margin-bottom: 15px;
-            font-size: 18px;
-            border-bottom: 1px solid #7289da;
-            padding-bottom: 8px;
-        }
-
-        .project-list {
-            max-height: 300px;
-            overflow-y: auto;
-            padding-right: 5px;
-        }
-
-        .project-list::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .project-list::-webkit-scrollbar-track {
-            background: #2f3136;
-            border-radius: 3px;
-        }
-
-        .project-list::-webkit-scrollbar-thumb {
-            background: #7289da;
-            border-radius: 3px;
-        }
-
-        .project-item {
-            display: flex;
-            align-items: center;
-            padding: 8px 10px;
-            margin-bottom: 5px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .project-item:hover {
-            background-color: #36393f;
-        }
-
-        .project-item.active {
-            background-color: #7289da;
-            color: white;
-        }
-
-        .project-color {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 10px;
-            flex-shrink: 0;
-        }
-
-        .project-name {
-            flex-grow: 1;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .project-count {
-            background-color: #36393f;
-            color: #bbb;
-            padding: 2px 6px;
-            border-radius: 10px;
-            font-size: 12px;
-            margin-left: 8px;
-        }
-
-        .project-item.active .project-count {
-            background-color: #5b6eae;
-            color: white;
-        }
-
-        .clear-project-filter {
-            display: block;
-            width: 100%;
-            background-color: #7289da;
-            color: white;
-            border: none;
-            padding: 8px;
-            border-radius: 5px;
-            margin-top: 10px;
-            cursor: pointer;
-            text-align: center;
-            transition: background-color 0.2s;
-        }
-
-        .clear-project-filter:hover {
-            background-color: #5b6eae;
-        }
-
-        @media (max-width: 768px) {
-            .filter-container {
-                flex-direction: column;
-            }
-            
-            .project-filter {
-                max-width: 100%;
-            }
-        }
     </style>
 </head>
 <body>
@@ -712,17 +591,6 @@
     <button type="button" id="search-btn">Search</button>
     <button type="button" id="clear-search-btn">Clear</button>
 </div>
-
-<!--
-<div class="filter-container">
-    <div class="project-filter">
-        <h3>Filter by Project</h3>
-        <div class="project-list" id="project-list">
-
-        </div>
-        <button class="clear-project-filter" id="clear-project-filter">Clear Project Filter</button>
-    </div>
-</div>-->
 
 <div class="top-actions">
     {% if not deleted %}
@@ -838,29 +706,17 @@
 <script>
     // Store all tasks initially
     let allTasks = [];
-    let allProjects = {};
 
     // Get all tasks when page loads
     document.addEventListener('DOMContentLoaded', function() {
         // Extract tasks from the HTML (they're already rendered server-side)
         const taskCards = document.querySelectorAll('.task-card');
         allTasks = Array.from(taskCards).map(card => {
-            // Extract project information if it exists
-            const projectElement = card.querySelector('li strong:contains("Project:")');
-            let project = null;
-            if (projectElement) {
-                project = projectElement.nextSibling.textContent.trim();
-                if (project) {
-                    allProjects[project] = (allProjects[project] || 0) + 1;
-                }
-            }
-
             return {
                 element: card,
                 title: card.querySelector('.task-title').textContent.toLowerCase(),
                 description: card.querySelector('.task-desc').textContent.toLowerCase(),
-                details: card.querySelector('.task-details').textContent.toLowerCase(),
-                project: project ? project.toLowerCase() : null
+                details: card.querySelector('.task-details').textContent.toLowerCase()
             };
         });
         
@@ -876,47 +732,15 @@
         
         // Add click event for clear button
         document.getElementById('clear-search-btn').addEventListener('click', clearSearch);
-
-        // Initialize project filter
-        initializeProjectFilter();
     });
-
-    function initializeProjectFilter() {
-        const colors = ['#7289da', '#43b581', '#f04747', '#faa61a', '#747f8d', '#593695', '#eb459e'];
-        const projectList = document.getElementById('project-list');
-        
-        Object.entries(allProjects).forEach(([projectName, count], index) => {
-            const projectItem = document.createElement('div');
-            projectItem.className = 'project-item';
-            projectItem.innerHTML = `
-                <div class="project-color" style="background-color: ${colors[index % colors.length]}"></div>
-                <div class="project-name">${projectName}</div>
-                <div class="project-count">${count}</div>
-            `;
-            projectItem.addEventListener('click', () => {
-                projectItem.classList.toggle('active');
-                performSearch(); // Update search results when projects are selected
-            });
-            projectList.appendChild(projectItem);
-        });
-
-        // Clear project filter button
-        document.getElementById('clear-project-filter').addEventListener('click', () => {
-            document.querySelectorAll('.project-item.active').forEach(item => {
-                item.classList.remove('active');
-            });
-            performSearch();
-        });
-    }
-
-    function getSelectedProjects() {
-        return Array.from(document.querySelectorAll('.project-item.active'))
-            .map(item => item.querySelector('.project-name').textContent.trim().toLowerCase());
-    }
 
     function performSearch() {
         const query = document.getElementById('search-input').value.trim().toLowerCase();
-        const selectedProjects = getSelectedProjects();
+        
+        if (query.length === 0) {
+            clearSearch();
+            return;
+        }
         
         showLoading(true);
         
@@ -925,21 +749,11 @@
             task.element.style.display = 'none';
         });
         
-        // Filter tasks that match the search query and selected projects
+        // Filter tasks that match the search query
         const matchingTasks = allTasks.filter(task => {
-            // Check if matches search query
-            const matchesSearch = query.length === 0 || 
-                task.title.includes(query) || 
-                task.description.includes(query) || 
-                task.details.includes(query);
-            
-            // Check if matches project filter
-            let matchesProject = true;
-            if (selectedProjects.length > 0) {
-                matchesProject = task.project && selectedProjects.includes(task.project);
-            }
-            
-            return matchesSearch && matchesProject;
+            return task.title.includes(query) || 
+                   task.description.includes(query) || 
+                   task.details.includes(query);
         });
         
         // Show matching tasks
@@ -958,9 +772,7 @@
             
             const noResults = document.createElement('div');
             noResults.className = 'no-results';
-            noResults.textContent = selectedProjects.length > 0 
-                ? 'No tasks found matching your search and project filters.' 
-                : 'No tasks found matching your search.';
+            noResults.textContent = 'No tasks found matching your search.';
             taskContainer.appendChild(noResults);
         } else {
             // Remove any existing no-results message
@@ -975,9 +787,6 @@
 
     function clearSearch() {
         document.getElementById('search-input').value = '';
-        document.querySelectorAll('.project-item.active').forEach(item => {
-            item.classList.remove('active');
-        });
         
         // Show all tasks
         allTasks.forEach(task => {
@@ -1169,19 +978,6 @@
             }
         });
     });
-
-    // Helper function for :contains selector
-    document.querySelectorAll = function(selector) {
-        if (selector.includes(':contains(')) {
-            const [tag, text] = selector.split(':contains(');
-            const searchText = text.slice(0, -1);
-            const elements = document.querySelectorAll(tag);
-            return Array.from(elements).filter(el => 
-                el.textContent.includes(searchText)
-            );
-        }
-        return this.constructor.prototype.querySelectorAll.apply(this, arguments);
-    };
 </script>
 
 </body>
