@@ -22,6 +22,7 @@ fields = [
           "name", #Full Name
           "dateOfBirth",
           "gender", #Prefer Not to Say or Other
+          "bookmarks" #To Be Implemented, will be a list of links
         ]
 
 
