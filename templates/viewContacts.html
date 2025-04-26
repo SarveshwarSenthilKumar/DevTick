@@ -580,6 +580,11 @@
 </div>
 
 <div class="top-actions">
+    {% if not deleted %}
+    <button onclick="window.location.href='/contacts/checkdeleted'">🗑️ Check Deleted Contacts</button>
+    {% else %}
+    <button onclick="window.location.href='/contacts/getContacts'">Check Active Contacts</button>
+    {% endif %}
     <button onclick="window.location.href='/contacts/createcontact'">+ New Contact</button>
     <button onclick="window.location.href='/'">🏠 Home</button>
 </div>
@@ -656,10 +661,17 @@
         </ul>
 
         <div class="contact-actions">
+            {% if not deleted %}
             <button onclick="editContact({{ contact.id }})" class="action-btn">Edit</button>
-            <form method="POST" action="/contacts/deletecontact/{{ contact.id }}" class="inline-form">
-                <button type="submit" class="action-btn delete-btn">Delete</button>
-            </form>
+
+                <form method="POST" action="/contacts/deletecontact/{{ contact.id }}" class="inline-form">
+                    <button type="submit" class="action-btn delete-btn">Delete</button>
+                </form>
+            {% else %}
+                <form method="POST" action="/contacts/recovercontact/{{ contact.id }}" class="inline-form">
+                    <button type="submit" class="action-btn recover-btn">Recover</button>
+                </form>
+            {% endif %}
         </div>
 
         <div class="edit-mode" id="edit-mode-{{ contact.id }}">
