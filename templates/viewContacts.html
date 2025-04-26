@@ -608,12 +608,12 @@
             <li><strong>Role:</strong> <span>{{ contact.role }}</span></li>
             {% endif %}
             
-            {% if contact.email %}
-            <li><strong>Email:</strong> <span>{{ contact.email }}</span></li>
+            {% if contact.emailAddress %}
+            <li><strong>Email:</strong> <span>{{ contact.emailAddress }}</span></li>
             {% endif %}
             
-            {% if contact.phone %}
-            <li><strong>Phone:</strong> <span>{{ contact.phone }}</span></li>
+            {% if contact.phoneNumber %}
+            <li><strong>Phone:</strong> <span>{{ contact.phoneNumber }}</span></li>
             {% endif %}
             
             {% if contact.address %}
@@ -632,11 +632,11 @@
             <li>
                 <strong>Social:</strong>
                 <div class="social-links">
-                    {% if contact.github %}
-                    <a href="{{ contact.github }}" target="_blank">GitHub</a>
+                    {% if contact.GitHub %}
+                    <a href="{{ contact.GitHub }}" target="_blank">GitHub</a>
                     {% endif %}
-                    {% if contact.linkedin %}
-                    <a href="{{ contact.linkedin }}" target="_blank">LinkedIn</a>
+                    {% if contact.LinkedIn %}
+                    <a href="{{ contact.LinkedIn }}" target="_blank">LinkedIn</a>
                     {% endif %}
                     {% if contact.website %}
                     <a href="{{ contact.website }}" target="_blank">Website</a>
@@ -680,7 +680,7 @@
                 <textarea id="description-{{ contact.id }}" name="description">{{ contact.description }}</textarea>
 
                 <label for="email-{{ contact.id }}">Email:</label>
-                <input type="email" id="email-{{ contact.id }}" name="email" value="{{ contact.email }}">
+                <input type="email" id="email-{{ contact.id }}" name="email" value="{{ contact.emailAddress }}">
 
                 <label for="phone-{{ contact.id }}">Phone:</label>
                 <input type="tel" id="phone-{{ contact.id }}" name="phone" value="{{ contact.phone }}">
@@ -702,10 +702,10 @@
                 </select>
 
                 <label for="github-{{ contact.id }}">GitHub Profile:</label>
-                <input type="url" id="github-{{ contact.id }}" name="github" value="{{ contact.github }}" placeholder="https://github.com/username">
+                <input type="url" id="github-{{ contact.id }}" name="github" value="{{ contact.GitHub }}" placeholder="https://github.com/username">
 
                 <label for="linkedin-{{ contact.id }}">LinkedIn Profile:</label>
-                <input type="url" id="linkedin-{{ contact.id }}" name="linkedin" value="{{ contact.linkedin }}" placeholder="https://linkedin.com/in/username">
+                <input type="url" id="linkedin-{{ contact.id }}" name="linkedin" value="{{ contact.LinkedIn }}" placeholder="https://linkedin.com/in/username">
 
                 <label for="website-{{ contact.id }}">Personal Website:</label>
                 <input type="url" id="website-{{ contact.id }}" name="website" value="{{ contact.website }}" placeholder="https://example.com">

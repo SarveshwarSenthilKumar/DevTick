@@ -50,3 +50,39 @@ def getContacts():
             contact["additionalValues"] = json.loads(contact["additionalValues"])
 
         return render_template("viewContacts.html", contacts=contacts)
+    
+
+@contacts_blueprint.route("/editcontact/<int:contact_id>", methods=["POST"])
+def edit_contact(contact_id):
+    if not session.get("name"):
+        return redirect("/")
+    
+    db = SQL("sqlite:///databases/contacts.db")
+    
+    contact = db.execute("SELECT id FROM contacts WHERE id = :id AND ownedBy = :owner", 
+                     id=contact_id, owner=session.get("id"))
+    if not contact:
+        db = SQL("sqlite:///databases/contacts.db")
+        contacts = db.execute("SELECT * FROM contacts WHERE ownedBy = :id", id=session.get("id"))
+
+        for contact in contacts:
+            contact["additionalFields"] = json.loads(contact["additionalFields"])
+            contact["additionalValues"] = json.loads(contact["additionalValues"])
+
+        return render_template("viewContacts.html", contacts=contacts, error="Task cannot be found!")
+    
+    additional_fields = request.form.getlist('additionalFields[]')
+    additional_values = request.form.getlist('additionalValues[]')
+    
+    db.execute("UPDATE contacts SET name = :name, nickname = :nickname, company = :company, role = :role, description = :description, emailAddress = :email, address = :address, phoneNumber = :phone, dateOfBirth = :birthDate, gender = :gender, GitHub = :github, LinkedIn = :linkedin, website = :website, additionalFields = :additionalFields, additionalValues = :additionalValues WHERE id = :id AND ownedBy = :owner", name=request.form.get("name"), nickname=request.form.get("nickname"), company=request.form.get("company"), role=request.form.get("role"), description=request.form.get("description"), email=request.form.get("email"), address=request.form.get("address"), phone=request.form.get("phone"), birthDate=request.form.get("birthDate"), gender=request.form.get("gender"), github=request.form.get("github"), linkedin=request.form.get("linkedin"), website=request.form.get("website"), additionalFields=json.dumps(additional_fields), additionalValues=json.dumps(additional_values), id=contact_id, owner=session.get("id"))
+    
+    db = SQL("sqlite:///databases/contacts.db")
+    contacts = db.execute("SELECT * FROM contacts WHERE ownedBy = :id AND status != :status", id=session.get("id"), status="Deleted")
+    print(contacts)
+
+    for contact in contacts:
+        contact["additionalFields"] = json.loads(contact["additionalFields"])
+        contact["additionalValues"] = json.loads(contact["additionalValues"])
+
+    return render_template("viewContacts.html", contacts=contacts)
+
