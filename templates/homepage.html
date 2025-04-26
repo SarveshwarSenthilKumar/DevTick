@@ -273,7 +273,7 @@
             <button onclick="checkContacts()">View Contacts</button>
             <button onclick="createContact()">Create Contact</button>
         </div>
-        <input type="text" class="search-bar" placeholder="Search contacts..." oninput="searchContacts()">
+        <input type="text" class="search-bar" placeholder="Search contacts..." oninput="window.location.href = '/contacts/getContacts'">
         <ul class="contacts-list" id="contacts-list">
             <!-- Contacts will be dynamically added here -->
         </ul>
