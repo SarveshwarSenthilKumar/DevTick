@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevTick - Developer Todo App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://i.ibb.co/KjnRR0ky/image-2025-04-02-195727739.png">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #0D1117;
+            color: #e1e4e8;
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .logo {
+            margin-top: 20px;
+            margin-bottom: 10px;
+            width: 120px;
+            height: auto;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 600;
+            color: #58a6ff;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-top: 20px;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        p {
+            font-size: 1.1rem;
+            color: #b0b0b0;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+
+        .button-group {
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            max-width: 500px;
+        }
+
+        .button-group button {
+            background-color: #58a6ff;
+            color: white;
+            padding: 14px 30px;
+            font-size: 1.1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s, transform 0.2s;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .button-group button:hover {
+            background-color: #1d80e0;
+            transform: translateY(-3px);
+        }
+
+        .button-group button:active {
+            transform: translateY(1px);
+        }
+
+        .templates-button {
+            width: 100%;
+        }
+
+        .section {
+            padding: 40px 20px;
+            width: 100%;
+            max-width: 1000px;
+            margin-top: 40px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #58a6ff;
+        }
+
+        .section p, .section ul {
+            font-size: 1rem;
+            color: #b0b0b0;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .section ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .section ul li {
+            font-size: 1.1rem;
+            margin: 10px 0;
+        }
+
+        .card {
+            background-color: #161b22;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+        }
+
+        .card h3 {
+            font-size: 1.25rem;
+            color: #58a6ff;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 1rem;
+            color: #b0b0b0;
+        }
+
+        .card ul {
+            list-style-type: none;
+            padding-left: 0;
+            color: #b0b0b0;
+        }
+
+        .enhancements {
+            background-color: #161b22;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+        }
+
+        footer {
+            margin-top: 40px;
+            font-size: 0.9rem;
+            color: #8b949e;
+        }
+
+        footer a {
+            color: #58a6ff;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Logo -->
+    <img class="logo" src="https://i.ibb.co/KjnRR0ky/image-2025-04-02-195727739.png" alt="DevTick Logo">
+
+    <h1>DevTick - Developer Todo App</h1>
+    <p>Stay organized and boost productivity with a clean, powerful task management tool for developers.</p>
+
+    <!-- Button Group -->
+    <div class="button-group">
+        <button onclick="window.location.href='/auth/login'">Login</button>
+        <button onclick="window.location.href='/auth/signup'">Sign Up</button>
+        <button class="templates-button" onclick="window.location.href='/templates'">View Templates</button>
+    </div>
+
+    <!-- Features Section -->
+    <div class="section">
+        <h2>Features</h2>
+
+        <div class="card">
+            <div class="section-title">📝 Developer Todo List</div>
+            <p>Organize your tasks and track project progress with categories like bug fixes, feature development, and more.</p>
+        </div>
+
+        <div class="card">
+            <div class="section-title">📚 Contact Book</div>
+            <p>Store and organize your contacts, from collaborators to mentors, with links to GitHub, LinkedIn, and more.</p>
+        </div>
+
+        <div class="card">
+            <div class="section-title">🔑 API Key Management</div>
+            <p>Securely manage and store API keys, with the option to add notes on usage and restrictions.</p>
+        </div>
+
+        <div class="card">
+            <div class="section-title">💡 Project Ideas</div>
+            <p>Brainstorm, categorize, and keep track of new project ideas based on difficulty, tech stack, or application type.</p>
+        </div>
+
+        <div class="card">
+            <div class="section-title">🛠️ Project Categories</div>
+            <p>Organize projects by type, such as Web Development, Mobile Development, AI/ML, and Open Source Contributions.</p>
+        </div>
+
+        <div class="card">
+            <div class="section-title">🤖 AI-Powered Text Chat</div>
+            <p>Ask coding questions, get guidance, or debug with an AI-powered chat integrated directly into the app.</p>
+        </div>
+
+        <div class="card">
+            <div class="section-title">📈 Progress Tracker</div>
+            <p>Track milestones, completion percentages, and deadlines with visual progress representation.</p>
+        </div>
+
+        <div class="card">
+            <div class="section-title">🔄 Sync Across Devices</div>
+            <p>Access your tasks, contacts, and projects on any device with seamless syncing.</p>
+        </div>
+
+        <div class="card">
+            <div class="section-title">🚀 Developer Templates</div>
+            <p>Browse 100+ curated templates across frontend, backend, fullstack, mobile, AI/ML, and DevOps categories to kickstart your projects.</p>
+        </div>
+    </div>
+
+    <!-- Future Enhancements Section -->
+    <div class="enhancements">
+        <h3>Future Enhancements</h3>
+        <ul>
+            <li><strong>Collaboration Tools:</strong> Share and collaborate on tasks and projects with teams.</li>
+            <li><strong>Code Snippet Library:</strong> Store reusable code snippets and templates for easy access.</li>
+            <li><strong>Code Review Integration:</strong> Seamlessly manage pull requests and code reviews with GitHub/GitLab integration.</li>
+        </ul>
+    </div>
+
+    <!-- Tech Stack Section -->
+    <div class="section">
+        <h2>Tech Stack</h2>
+        <ul>
+            <li><strong>Backend:</strong> Flask (Python)</li>
+            <li><strong>Database:</strong> SQLite3</li>
+            <li><strong>Frontend:</strong> HTML, CSS (with future plans for JavaScript and frameworks like React or Vue.js)</li>
+        </ul>
+    </div>
+
+    <!-- Installation Section -->
+    <style>
+        .console {
+            background-color: #161b22;
+            color: #58a6ff;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            overflow-x: auto;
+            white-space: pre-wrap;
+            font-size: 1rem;
+            line-height: 1.5;
+            text-align: left;
+        }
+    </style>
+
+    <style>
+        .file-structure {
+            background-color: #161b22;
+            color: #58a6ff;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            text-align: left;
+            max-width: 600px;
+            margin: 20px auto;
+            white-space: pre;
+        }
+    </style>
+    <h2>File Structure</h2>
+    <div class="file-structure">
+        DevTick/
+        ├── templates/
+        │   ├── auth/
+        │   │   ├── loggedin.html
+        │   │   ├── login.html
+        │   │   ├── signup.html
+        │   ├── index.html
+        ├── .gitignore
+        ├── DevTickIcon.png
+        ├── DevTickLogo.png
+        ├── LICENSE
+        ├── README.md
+        ├── SarvAuth.py
+        ├── Template_README.md
+        ├── app.py
+        ├── auth.py
+        ├── createAPIstorage.py
+        ├── createContactbook.py
+        ├── createDatabase.py
+        ├── createProjectsDB.py
+        ├── createTasksDB.py
+        ├── requirements.txt
+        └── sql.py
+    </div>
+    
+    <div class="section">
+        <h2>Installation</h2>
+        <div class="console">
+            $ git clone https://github.com/SarveshwarSenthilKumar/DevTick.git<br>
+            $ cd DevTick<br>
+            $ python3 -m venv venv<br>
+            $ source venv/bin/activate  <span style="color: #b0b0b0;"># On Mac/Linux</span><br>
+            $ venv\Scripts\activate      <span style="color: #b0b0b0;"># On Windows</span><br>
+            $ pip install -r requirements.txt<br>
+            $ python createAPIstorage.py<br>
+            $ python createContactbook.py<br>
+            $ python createDatabase.py<br>
+            $ python createProjectsDB.py<br>
+            $ python createTasksDB.py<br>
+            $ python app.py
+        </div>
+    </div>
+
+    <style>
+        .contact {
+            background-color: #161b22;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            text-align: left;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        .contact ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .contact li {
+            font-size: 1.1rem;
+            margin: 10px 0;
+        }
+
+        .contact a {
+            color: #58a6ff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .contact a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+
+    <!-- Contact Section -->
+    <div class="section contact">
+        <h2>Contact</h2>
+        <p>For any questions, feedback, or contributions:</p>
+        <ul>
+            <li><strong>Email:</strong> <a href="mailto:sarveshwar313@gmail.com">sarveshwar313@gmail.com</a></li>
+            <li><strong>GitHub Profile:</strong> <a href="https://github.com/SarveshwarSenthilKumar/" target="_blank">GitHub of SarveshwarSenthilKumar</a></li>
+            <li><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/sarveshwarsenthilkumar/" target="_blank">Connect with Sarveshwar Senthil Kumar</a></li>
+            <li><strong>Website:</strong> <a href="https://sarveshwarsenthilkumar.github.io" target="_blank">Sarveshwar Senthil Kumar Portfolio</a></li>
+            <br>
+            <li><strong>GitHub Repository:</strong> <a href="https://github.com/SarveshwarSenthilKumar/DevTick" target="_blank">DevTick GitHub</a></li>
+        </ul>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2025 DevTick. All rights reserved. Built with passion and Python.</p>
+    </footer>
+
+</body>
+</html>
