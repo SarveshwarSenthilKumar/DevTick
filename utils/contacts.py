@@ -135,3 +135,39 @@ def delete_contact(contact_id):
     return render_template("viewContacts.html", contacts=contacts, error="Contact has been deleted successfully!", success=True)
 
 
+@contacts_blueprint.route("/recovercontact/<int:contact_id>", methods=["GET", "POST"])
+def recover_contact(contact_id):
+    if not session.get("name"):
+        return redirect("/")
+    
+    db = SQL("sqlite:///databases/contacts.db")
+    
+    contact = db.execute("SELECT id FROM contacts WHERE id = :id AND ownedBy = :owner", 
+                     id=contact_id, owner=session.get("id"))
+    if not contact:
+        db = SQL("sqlite:///databases/contacts.db")
+        contacts = db.execute("SELECT * FROM contacts WHERE ownedBy = :id", id=session.get("id"))
+
+        for contact in contacts:
+            contact["additionalFields"] = json.loads(contact["additionalFields"])
+            contact["additionalValues"] = json.loads(contact["additionalValues"])
+
+        return render_template("viewTasks.html", contacts=contacts, error="Task cannot be found!")
+    
+    else:
+        tz_NY = pytz.timezone('America/New_York') 
+        now = datetime.now(tz_NY)
+        recoveredOn = now.strftime("%d/%m/%Y %H:%M:%S")
+
+        status = "Recovered on " + recoveredOn
+
+        db.execute("UPDATE contacts SET status = :status WHERE id = :id AND ownedBy = :owner", status=status, id=contact_id, owner=session.get("id"))
+
+    db = SQL("sqlite:///databases/contacts.db")
+    tasks = db.execute("SELECT * FROM contacts WHERE ownedBy = :id AND status != :status", id=session.get("id"), status="Deleted")
+
+    for contact in tasks:
+        contact["additionalFields"] = json.loads(contact["additionalFields"])
+        contact["additionalValues"] = json.loads(contact["additionalValues"])
+
+    return render_template("viewContacts.html", tasks=tasks, error="Task has been recovered successfully!", success=True)
