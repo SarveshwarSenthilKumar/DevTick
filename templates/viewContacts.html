@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Contacts - DevTick</title>
+    <link rel="icon" type="image/png" href="https://i.ibb.co/KjnRR0ky/image-2025-04-02-195727739.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-color: #36393f;
+            --text-color: white;
+            --input-bg: #444;
+            --input-border: #666;
+            --field-bg: #40444b;
+            --field-input-bg: #2f3136;
+            --field-input-border: #202225;
+        }
+
+        body.light-mode {
+            --bg-color: white;
+            --text-color: #333;
+            --input-bg: #f0f0f0;
+            --input-border: #ddd;
+            --field-bg: #f0f0f0;
+            --field-input-bg: white;
+            --field-input-border: #ddd;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #2f3136;
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        header {
+            width: 100%;
+            background-color: #1f2024;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            width: 30px;
+            height: 30px;
+        }
+
+        .theme-toggle-btn, .logout-btn {
+            background-color: #7289da;
+            color: white;
+            cursor: pointer;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .theme-toggle-btn:hover, .logout-btn:hover {
+            background-color: #5b6eae;
+        }
+
+        h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #7289da;
+        }
+
+        .contact-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 20px;
+        }
+
+        .contact-card {
+            background-color: #36393f;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .contact-name, .contact-desc {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .contact-desc {
+            font-size: 16px;
+            color: #ccc;
+        }
+
+        ul.contact-details {
+            list-style: none;
+            padding-left: 0;
+            margin: 10px 0;
+            line-height: 1.6;
+            color: #bbb;
+        }
+
+        ul.contact-details li strong {
+            color: #ccc;
+        }
+
+        .contact-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .contact-actions button {
+            flex: 1;
+            padding: 10px;
+            font-size: 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background-color: #7289da;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .contact-actions button:hover {
+            background-color: #5b6eae;
+            transform: translateY(-2px);
+        }
+
+        .delete-btn {
+            background-color: #f04747 !important;
+        }
+
+        .delete-btn:hover {
+            background-color: #d83c3c !important;
+        }
+
+        .top-actions {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .top-actions button {
+            background-color: #7289da;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 0 5px;
+            transition: all 0.3s;
+        }
+
+        .top-actions button:hover {
+            background-color: #5b6eae;
+            transform: translateY(-2px);
+        }
+
+        .edit-mode {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--bg-color);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 10;
+            overflow-y: auto;
+            color: var(--text-color);
+        }
+
+        .edit-mode label {
+            display: block;
+            margin-top: 10px;
+            color: #ccc;
+        }
+
+        .edit-mode input, 
+        .edit-mode select, 
+        .edit-mode textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: none;
+            background-color: #2f3136;
+            color: white;
+        }
+
+        .edit-mode textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .light-mode .edit-mode input,
+        .light-mode .edit-mode select,
+        .light-mode .edit-mode textarea {
+            background-color: white;
+            color: black;
+        }
+
+        .save-btn {
+            background-color: #43b581;
+            color: white;
+        }
+
+        .save-btn:hover {
+            background-color: #3aa371;
+            transform: translateY(-2px);
+        }
+
+        .cancel-btn {
+            background-color: #f04747;
+            color: white;
+        }
+
+        .cancel-btn:hover {
+            background-color: #d83c3c;
+            transform: translateY(-2px);
+        }
+
+        .additional-field-container {
+            margin-top: 15px;
+            padding: 15px;
+            background: #40444b;
+            border-radius: 8px;
+        }
+
+        .additional-field-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .additional-field-group input {
+            flex: 1;
+            padding: 8px;
+            background: #2f3136;
+            border: 1px solid #202225;
+            border-radius: 4px;
+            color: white;
+        }
+
+        .add-field-btn,
+        .remove-field-btn {
+            padding: 8px 12px;
+            background: #7289da;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .add-field-btn:hover,
+        .remove-field-btn:hover {
+            background: #677bc4;
+        }
+        .error-message {
+            background-color: #f04747;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .close-error {
+            cursor: pointer;
+            font-size: 20px;
+            margin-left: 10px;
+        }
+
+        .close-error:hover {
+            color: #ddd;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Light Mode Styles */
+        body.light-mode {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        body.light-mode header {
+            background-color: #fff;
+            color: #333;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        body.light-mode .contact-card {
+            background-color: #fff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        body.light-mode .contact-name,
+        body.light-mode .contact-desc {
+            color: #333;
+        }
+
+        body.light-mode .contact-desc {
+            color: #666;
+        }
+
+        body.light-mode ul.contact-details {
+            color: #666;
+        }
+
+        body.light-mode ul.contact-details li strong {
+            color: #555;
+        }
+
+        body.light-mode .edit-mode input,
+        body.light-mode .edit-mode select,
+        body.light-mode .edit-mode textarea {
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        body.light-mode .additional-field-container {
+            background: #f0f0f0;
+        }
+
+        body.light-mode .additional-field-group input {
+            background: #fff;
+            border: 1px solid #ddd;
+            color: #333;
+        }
+
+        body.light-mode .error-message {
+            color: #fff;
+        }
+        .edit-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .edit-buttons button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .save-btn {
+            background-color: #43b581;
+        }
+
+        .save-btn:hover {
+            background-color: #3aa371;
+            transform: translateY(-2px);
+        }
+
+        .cancel-btn {
+            background-color: #f04747;
+        }
+
+        .cancel-btn:hover {
+            background-color: #d83c3c;
+            transform: translateY(-2px);
+        }
+
+        .search-container {
+            display: flex;
+            margin: 0 auto 20px;
+            max-width: 600px;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .search-container input {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: none;
+            background-color: #40444b;
+            color: white;
+            font-size: 16px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            min-width: 0;
+        }
+
+        .search-container input:focus {
+            outline: none;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            background-color: #484c54;
+        }
+
+        .search-container button {
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: none;
+            background-color: #7289da;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .search-container button:hover {
+            background-color: #5b6eae;
+        }
+
+        /* Light mode styles */
+        body.light-mode .search-container input {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        body.light-mode .search-container input:focus {
+            background-color: #e0e0e0;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .search-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .search-container button {
+                width: 100%;
+            }
+            
+            .top-actions {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .top-actions button {
+                width: 100%;
+                margin: 0;
+            }
+            
+            .contact-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .logo {
+                justify-content: center;
+            }
+            
+            .theme-toggle-btn, .logout-btn {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+
+        /* Loading indicator */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #7289da;
+            font-size: 18px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #7289da;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* No results message */
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #bbb;
+            font-size: 18px;
+            grid-column: 1 / -1;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .social-links a {
+            color: #7289da;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .social-links a:hover {
+            color: #5b6eae;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <img src="https://i.ibb.co/KjnRR0ky/image-2025-04-02-195727739.png" alt="DevTick Logo">
+        <span class="DevTickHeader">DevTick</span>
+    </div>
+    <div>
+        <button class="theme-toggle-btn" onclick="toggleTheme()">☀️</button>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+</header>
+
+{% if error %}
+    {% if success %}
+    <div class="error-message" style="background-color: #43b581;">
+        {{ error }}
+        <span class="close-error" onclick="this.parentElement.style.display='none'">×</span>
+    </div>
+    {% else %}
+    <div class="error-message">
+        {{ error }}
+        <span class="close-error" onclick="this.parentElement.style.display='none'">×</span>
+    </div>
+    {% endif %}
+{% endif %}
+
+<h2>Your Contacts</h2>
+
+<div class="search-container">
+    <input type="text" id="search-input" placeholder="Search contacts..." required>
+    <button type="button" id="search-btn">Search</button>
+    <button type="button" id="clear-search-btn">Clear</button>
+</div>
+
+<div class="top-actions">
+    <button onclick="window.location.href='/contacts/createcontact'">+ New Contact</button>
+    <button onclick="window.location.href='/'">🏠 Home</button>
+</div>
+
+<div class="loading">
+    <div class="spinner"></div>
+    <p>Searching contacts...</p>
+</div>
+
+<div class="contact-container" id="contact-container">
+    {% for contact in contacts %}
+    <div class="contact-card" id="contact-card-{{ contact.id }}">
+        <div class="contact-name" id="contact-name-{{ contact.id }}">{{ contact.name }}</div>
+        <div class="contact-desc" id="contact-desc-{{ contact.id }}">{{ contact.description }}</div>
+
+        <ul class="contact-details">
+            {% if contact.nickname %}
+            <li><strong>Nickname:</strong> <span>{{ contact.nickname }}</span></li>
+            {% endif %}
+            
+            {% if contact.company %}
+            <li><strong>Company:</strong> <span>{{ contact.company }}</span></li>
+            {% endif %}
+            
+            {% if contact.role %}
+            <li><strong>Role:</strong> <span>{{ contact.role }}</span></li>
+            {% endif %}
+            
+            {% if contact.email %}
+            <li><strong>Email:</strong> <span>{{ contact.email }}</span></li>
+            {% endif %}
+            
+            {% if contact.phone %}
+            <li><strong>Phone:</strong> <span>{{ contact.phone }}</span></li>
+            {% endif %}
+            
+            {% if contact.address %}
+            <li><strong>Address:</strong> <span>{{ contact.address }}</span></li>
+            {% endif %}
+            
+            {% if contact.dateOfBirth %}
+            <li><strong>Birth Date:</strong> <span>{{ contact.dateOfBirth }}</span></li>
+            {% endif %}
+            
+            {% if contact.gender %}
+            <li><strong>Gender:</strong> <span>{{ contact.gender }}</span></li>
+            {% endif %}
+            
+            {% if contact.github or contact.linkedin or contact.website %}
+            <li>
+                <strong>Social:</strong>
+                <div class="social-links">
+                    {% if contact.github %}
+                    <a href="{{ contact.github }}" target="_blank">GitHub</a>
+                    {% endif %}
+                    {% if contact.linkedin %}
+                    <a href="{{ contact.linkedin }}" target="_blank">LinkedIn</a>
+                    {% endif %}
+                    {% if contact.website %}
+                    <a href="{{ contact.website }}" target="_blank">Website</a>
+                    {% endif %}
+                </div>
+            </li>
+            {% endif %}
+
+            {% for i in range(contact.additionalFields|length) %}
+                {% if contact.additionalFields[i] or contact.additionalValues[i] %}
+                <li>
+                    <strong>{{ contact.additionalFields[i] or "Field" }}:</strong>
+                    <span>{{ contact.additionalValues[i] or "" }}</span>
+                </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+
+        <div class="contact-actions">
+            <button onclick="editContact({{ contact.id }})" class="action-btn">Edit</button>
+            <form method="POST" action="/contacts/deletecontact/{{ contact.id }}" class="inline-form">
+                <button type="submit" class="action-btn delete-btn">Delete</button>
+            </form>
+        </div>
+
+        <div class="edit-mode" id="edit-mode-{{ contact.id }}">
+            <form method="POST" action="/contacts/editcontact/{{ contact.id }}" id="edit-form-{{ contact.id }}">
+                <label for="name-{{ contact.id }}">Full Name:</label>
+                <input type="text" id="name-{{ contact.id }}" name="name" value="{{ contact.name }}" required>
+
+                <label for="nickname-{{ contact.id }}">Nickname:</label>
+                <input type="text" id="nickname-{{ contact.id }}" name="nickname" value="{{ contact.nickname }}">
+
+                <label for="company-{{ contact.id }}">Company:</label>
+                <input type="text" id="company-{{ contact.id }}" name="company" value="{{ contact.company }}">
+
+                <label for="role-{{ contact.id }}">Role/Title:</label>
+                <input type="text" id="role-{{ contact.id }}" name="role" value="{{ contact.role }}">
+
+                <label for="description-{{ contact.id }}">Description:</label>
+                <textarea id="description-{{ contact.id }}" name="description">{{ contact.description }}</textarea>
+
+                <label for="email-{{ contact.id }}">Email:</label>
+                <input type="email" id="email-{{ contact.id }}" name="email" value="{{ contact.email }}">
+
+                <label for="phone-{{ contact.id }}">Phone:</label>
+                <input type="tel" id="phone-{{ contact.id }}" name="phone" value="{{ contact.phone }}">
+
+                <label for="address-{{ contact.id }}">Address:</label>
+                <input type="text" id="address-{{ contact.id }}" name="address" value="{{ contact.address }}">
+
+                <label for="dateOfBirth-{{ contact.id }}">Date of Birth:</label>
+                <input type="date" id="dateOfBirth-{{ contact.id }}" name="dateOfBirth" value="{{ contact.dateOfBirth }}">
+
+                <label for="gender-{{ contact.id }}">Gender:</label>
+                <select id="gender-{{ contact.id }}" name="gender">
+                    <option value="">Select</option>
+                    <option value="Male" {% if contact.gender == 'Male' %}selected{% endif %}>Male</option>
+                    <option value="Female" {% if contact.gender == 'Female' %}selected{% endif %}>Female</option>
+                    <option value="Non-binary" {% if contact.gender == 'Non-binary' %}selected{% endif %}>Non-binary</option>
+                    <option value="Other" {% if contact.gender == 'Other' %}selected{% endif %}>Other</option>
+                    <option value="Prefer not to say" {% if contact.gender == 'Prefer not to say' %}selected{% endif %}>Prefer not to say</option>
+                </select>
+
+                <label for="github-{{ contact.id }}">GitHub Profile:</label>
+                <input type="url" id="github-{{ contact.id }}" name="github" value="{{ contact.github }}" placeholder="https://github.com/username">
+
+                <label for="linkedin-{{ contact.id }}">LinkedIn Profile:</label>
+                <input type="url" id="linkedin-{{ contact.id }}" name="linkedin" value="{{ contact.linkedin }}" placeholder="https://linkedin.com/in/username">
+
+                <label for="website-{{ contact.id }}">Personal Website:</label>
+                <input type="url" id="website-{{ contact.id }}" name="website" value="{{ contact.website }}" placeholder="https://example.com">
+
+                <div class="additional-field-container">
+                    <h4>Additional Fields:</h4>
+                    {% for i in range(contact.additionalFields|length) %}
+                    <div class="additional-field-group">
+                        <input type="text" name="additionalFields[]" value="{{ contact.additionalFields[i] }}" placeholder="Field name">
+                        <input type="text" name="additionalValues[]" value="{{ contact.additionalValues[i] }}" placeholder="Field value">
+                        <button type="button" class="remove-field-btn" onclick="removeAdditionalField(this)">Remove</button>
+                    </div>
+                    {% endfor %}
+                    <button type="button" class="add-field-btn" onclick="addAdditionalField(this)">+ Add Field</button>
+                </div>
+
+                <div class="edit-buttons">
+                    <button type="submit" class="save-btn">💾 Save</button>
+                    <button type="button" class="cancel-btn" onclick="cancelEdit({{ contact.id }})">✖ Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    // Store all contacts initially
+    let allContacts = [];
+
+    // Get all contacts when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        // Extract contacts from the HTML (they're already rendered server-side)
+        const contactCards = document.querySelectorAll('.contact-card');
+        allContacts = Array.from(contactCards).map(card => {
+            return {
+                element: card,
+                name: card.querySelector('.contact-name').textContent.toLowerCase(),
+                description: card.querySelector('.contact-desc').textContent.toLowerCase(),
+                details: card.querySelector('.contact-details').textContent.toLowerCase()
+            };
+        });
+        
+        // Add event listener for Enter key in search input
+        document.getElementById('search-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+        
+        // Add click event for search button
+        document.getElementById('search-btn').addEventListener('click', performSearch);
+        
+        // Add click event for clear button
+        document.getElementById('clear-search-btn').addEventListener('click', clearSearch);
+    });
+
+    function performSearch() {
+        const query = document.getElementById('search-input').value.trim().toLowerCase();
+        
+        if (query.length === 0) {
+            clearSearch();
+            return;
+        }
+        
+        showLoading(true);
+        
+        // Hide all contacts first
+        allContacts.forEach(contact => {
+            contact.element.style.display = 'none';
+        });
+        
+        // Filter contacts that match the search query
+        const matchingContacts = allContacts.filter(contact => {
+            return contact.name.includes(query) || 
+                   contact.description.includes(query) || 
+                   contact.details.includes(query);
+        });
+        
+        // Show matching contacts
+        matchingContacts.forEach(contact => {
+            contact.element.style.display = 'block';
+        });
+        
+        // Show no results message if no matches
+        const contactContainer = document.getElementById('contact-container');
+        if (matchingContacts.length === 0) {
+            // Remove any existing no-results message
+            const existingNoResults = document.querySelector('.no-results');
+            if (existingNoResults) {
+                existingNoResults.remove();
+            }
+            
+            const noResults = document.createElement('div');
+            noResults.className = 'no-results';
+            noResults.textContent = 'No contacts found matching your search.';
+            contactContainer.appendChild(noResults);
+        } else {
+            // Remove any existing no-results message
+            const existingNoResults = document.querySelector('.no-results');
+            if (existingNoResults) {
+                existingNoResults.remove();
+            }
+        }
+        
+        showLoading(false);
+    }
+
+    function clearSearch() {
+        document.getElementById('search-input').value = '';
+        
+        // Show all contacts
+        allContacts.forEach(contact => {
+            contact.element.style.display = 'block';
+        });
+        
+        // Remove any no-results message
+        const existingNoResults = document.querySelector('.no-results');
+        if (existingNoResults) {
+            existingNoResults.remove();
+        }
+    }
+
+    function showLoading(show) {
+        const loadingIndicator = document.querySelector('.loading');
+        if (show) {
+            loadingIndicator.style.display = 'block';
+        } else {
+            loadingIndicator.style.display = 'none';
+        }
+    }
+
+    function editContact(contactId) {
+        // Highlight the card being edited
+        document.getElementById(`contact-card-${contactId}`).classList.add('editing');
+        
+        // Hide all contact details
+        const elementsToHide = [
+            `contact-name-${contactId}`,
+            `contact-desc-${contactId}`
+        ];
+        
+        elementsToHide.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'none';
+        });
+        
+        // Hide the action buttons
+        document.querySelector(`#contact-card-${contactId} .contact-actions`).style.display = 'none';
+        
+        // Show the edit form
+        document.getElementById(`edit-mode-${contactId}`).style.display = 'block';
+        
+        // Scroll to the contact card if it's not fully visible
+        document.getElementById(`contact-card-${contactId}`).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function cancelEdit(contactId) {
+        // Remove editing highlight
+        document.getElementById(`contact-card-${contactId}`).classList.remove('editing');
+        
+        // Show all contact details
+        const elementsToShow = [
+            `contact-name-${contactId}`,
+            `contact-desc-${contactId}`
+        ];
+        
+        elementsToShow.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'block';
+        });
+        
+        // Show the action buttons
+        document.querySelector(`#contact-card-${contactId} .contact-actions`).style.display = 'flex';
+        
+        // Hide the edit form
+        document.getElementById(`edit-mode-${contactId}`).style.display = 'none';
+    }
+
+    function toggleTheme() {
+        const body = document.body;
+        const isDarkMode = body.classList.contains('dark-mode');
+        
+        if (isDarkMode) {
+            body.classList.remove('dark-mode');
+            body.classList.add('light-mode');
+            localStorage.setItem('theme', 'light');
+            document.querySelector('.theme-toggle-btn').textContent = '🌙';
+        } else {
+            body.classList.remove('light-mode');
+            body.classList.add('dark-mode');
+            localStorage.setItem('theme', 'dark');
+            document.querySelector('.theme-toggle-btn').textContent = '☀️';
+        }
+        
+        // Force redraw of any open edit modes
+        document.querySelectorAll('.edit-mode').forEach(editMode => {
+            editMode.style.display = 'none';
+            setTimeout(() => {
+                if (editMode.parentElement.classList.contains('editing')) {
+                    editMode.style.display = 'block';
+                }
+            }, 10);
+        });
+    }
+
+    // Check for saved theme preference on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        const body = document.body;
+        
+        if (savedTheme === 'light') {
+            body.classList.add('light-mode');
+            document.querySelector('.theme-toggle-btn').textContent = '🌙';
+        } else {
+            body.classList.add('dark-mode');
+            document.querySelector('.theme-toggle-btn').textContent = '☀️';
+        }
+    });
+
+    function logout() {
+        if (confirm("You are about to log out of DevTick!")) {
+            window.location.href = "/auth/logout";
+        }
+    }
+
+    // Function to add new additional field with validation
+    function addAdditionalField(button) {
+        const container = button.parentNode;
+        const existingFields = container.querySelectorAll('.additional-field-group');
+        
+        // Check if last field is empty
+        if (existingFields.length > 0) {
+            const lastField = existingFields[existingFields.length - 1];
+            const nameInput = lastField.querySelector('input[name="additionalFields[]"]');
+            const valueInput = lastField.querySelector('input[name="additionalValues[]"]');
+            
+            if (nameInput.value.trim() === '' || valueInput.value.trim() === '') {
+                alert('Please fill in both field name and value before adding a new one');
+                return;
+            }
+        }
+        
+        const fieldGroup = document.createElement('div');
+        fieldGroup.className = 'additional-field-group';
+        fieldGroup.innerHTML = `
+            <input type="text" name="additionalFields[]" placeholder="Field name" required>
+            <input type="text" name="additionalValues[]" placeholder="Field value" required>
+            <button type="button" class="remove-field-btn" onclick="removeAdditionalField(this)">Remove</button>
+        `;
+        container.insertBefore(fieldGroup, button);
+    }
+
+    // Function to remove additional field
+    function removeAdditionalField(button) {
+        const container = button.closest('.additional-field-container');
+        const fieldGroups = container.querySelectorAll('.additional-field-group');
+        
+        // Don't allow removing if it's the only field
+        if (fieldGroups.length <= 1) {
+            alert('You need at least one additional field');
+            return;
+        }
+        
+        button.parentNode.remove();
+    }
+
+    // Prevent form submission if any additional field is incomplete
+    document.querySelectorAll('[id^="edit-form-"]').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const container = this.querySelector('.additional-field-container');
+            if (container) {
+                const fields = container.querySelectorAll('.additional-field-group');
+                
+                for (let field of fields) {
+                    const nameInput = field.querySelector('input[name="additionalFields[]"]');
+                    const valueInput = field.querySelector('input[name="additionalValues[]"]');
+                    
+                    // Check if one is filled but not the other
+                    if ((nameInput.value.trim() === '' && valueInput.value.trim() !== '') || 
+                        (nameInput.value.trim() !== '' && valueInput.value.trim() === '')) {
+                        alert('Please fill in both field name and value for all additional fields');
+                        e.preventDefault();
+                        return;
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
