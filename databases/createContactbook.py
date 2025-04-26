@@ -21,9 +21,11 @@ fields = [
           "LinkedIn",
           "emailAddress",
           "phoneNumber",
+          "address",
           "name", #Full Name
           "dateOfBirth",
           "gender", #Prefer Not to Say or Other
+          "status", #Status of the contact, such as "Deleted" or "Finished"
         ]
 
 

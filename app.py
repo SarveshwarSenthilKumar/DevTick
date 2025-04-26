@@ -7,6 +7,7 @@ from utils.sql import * #Used for database connection and management
 from utils.SarvAuth import * #Used for user authentication functions
 from utils.auth import auth_blueprint
 from utils.tasks import tasks_blueprint
+from utils.contacts import contacts_blueprint
 
 app = Flask(__name__)
 
@@ -22,6 +23,7 @@ if authentication:
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
 
 app.register_blueprint(tasks_blueprint, url_prefix='/tasks')
+app.register_blueprint(contacts_blueprint, url_prefix='/contacts')
 
 #This route is the base route for the website which renders the landing page, then homepage if logged in
 @app.route("/", methods=["GET", "POST"])
