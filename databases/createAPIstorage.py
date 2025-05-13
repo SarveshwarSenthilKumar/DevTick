@@ -14,6 +14,7 @@ fields = [
           "additionalFields", #Set up additional fields separated by a comma
           "additionalValues", #Used to store the values for the additional fields
           "serviceName", 
+          "apiKey", 
           "description", 
           "createdAt", 
           "expiresAt", 

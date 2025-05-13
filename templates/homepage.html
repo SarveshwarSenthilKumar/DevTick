@@ -284,7 +284,7 @@
         <h3 class="section-title">API Key Management</h3>
         <div class="button-group">
             <button onclick="addApiKey()">Add API Key</button>
-            <button onclick="searchApiKey()">Search API Key</button>
+            <button onclick="searchApiKey()">Generate API Key</button>
             <button onclick="viewApiKeys()">View All API Keys</button>
         </div>
         <input type="text" class="search-bar" placeholder="Search API keys..." oninput="searchApiKeys()">
@@ -333,7 +333,7 @@
     function createTask() { window.location.href = "/tasks/createtask"; }
     function checkContacts() { window.location.href = "/contacts/getContacts"; }
     function createContact() { window.location.href = "/contacts/createcontact"; }
-    function addApiKey() { alert("Adding new API key..."); }
+    function addApiKey() { window.location.href = "/keys/createkey"; }
     function searchApiKey() { alert("Searching API key..."); }
     function viewApiKeys() { alert("Viewing API keys..."); }
     function viewProjectIdeas() { alert("Viewing project ideas..."); }
