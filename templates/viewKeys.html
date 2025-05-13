@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your API Keys - DevTick</title>
+    <link rel="icon" type="image/png" href="https://i.ibb.co/KjnRR0ky/image-2025-04-02-195727739.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-color: #36393f;
+            --text-color: white;
+            --input-bg: #444;
+            --input-border: #666;
+            --field-bg: #40444b;
+            --field-input-bg: #2f3136;
+            --field-input-border: #202225;
+        }
+
+        body.light-mode {
+            --bg-color: white;
+            --text-color: #333;
+            --input-bg: #f0f0f0;
+            --input-border: #ddd;
+            --field-bg: #f0f0f0;
+            --field-input-bg: white;
+            --field-input-border: #ddd;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #2f3136;
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        header {
+            width: 100%;
+            background-color: #1f2024;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            width: 30px;
+            height: 30px;
+        }
+
+        .theme-toggle-btn, .logout-btn {
+            background-color: #7289da;
+            color: white;
+            cursor: pointer;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .theme-toggle-btn:hover, .logout-btn:hover {
+            background-color: #5b6eae;
+        }
+
+        h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #7289da;
+        }
+
+        .key-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 20px;
+        }
+
+        .key-card {
+            background-color: #36393f;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .key-service, .key-desc {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .key-desc {
+            font-size: 16px;
+            color: #ccc;
+        }
+
+        ul.key-details {
+            list-style: none;
+            padding-left: 0;
+            margin: 10px 0;
+            line-height: 1.6;
+            color: #bbb;
+        }
+
+        ul.key-details li strong {
+            color: #ccc;
+        }
+
+        .key-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .key-actions button {
+            flex: 1;
+            padding: 10px;
+            font-size: 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background-color: #7289da;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .key-actions button:hover {
+            background-color: #5b6eae;
+            transform: translateY(-2px);
+        }
+
+        .delete-btn {
+            background-color: #f04747 !important;
+        }
+
+        .delete-btn:hover {
+            background-color: #d83c3c !important;
+        }
+
+        .top-actions {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .top-actions button {
+            background-color: #7289da;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 0 5px;
+            transition: all 0.3s;
+        }
+
+        .top-actions button:hover {
+            background-color: #5b6eae;
+            transform: translateY(-2px);
+        }
+
+        .edit-mode {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--bg-color);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 10;
+            overflow-y: auto;
+            color: var(--text-color);
+        }
+
+        .edit-mode label {
+            display: block;
+            margin-top: 10px;
+            color: #ccc;
+        }
+
+        .edit-mode input, 
+        .edit-mode select, 
+        .edit-mode textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: none;
+            background-color: #2f3136;
+            color: white;
+        }
+
+        .edit-mode textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .light-mode .edit-mode input,
+        .light-mode .edit-mode select,
+        .light-mode .edit-mode textarea {
+            background-color: white;
+            color: black;
+        }
+
+        .save-btn {
+            background-color: #43b581;
+            color: white;
+        }
+
+        .save-btn:hover {
+            background-color: #3aa371;
+            transform: translateY(-2px);
+        }
+
+        .cancel-btn {
+            background-color: #f04747;
+            color: white;
+        }
+
+        .cancel-btn:hover {
+            background-color: #d83c3c;
+            transform: translateY(-2px);
+        }
+
+        .additional-field-container {
+            margin-top: 15px;
+            padding: 15px;
+            background: #40444b;
+            border-radius: 8px;
+        }
+
+        .additional-field-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .additional-field-group input {
+            flex: 1;
+            padding: 8px;
+            background: #2f3136;
+            border: 1px solid #202225;
+            border-radius: 4px;
+            color: white;
+        }
+
+        .add-field-btn,
+        .remove-field-btn {
+            padding: 8px 12px;
+            background: #7289da;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .add-field-btn:hover,
+        .remove-field-btn:hover {
+            background: #677bc4;
+        }
+        .error-message {
+            background-color: #f04747;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .close-error {
+            cursor: pointer;
+            font-size: 20px;
+            margin-left: 10px;
+        }
+
+        .close-error:hover {
+            color: #ddd;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Light Mode Styles */
+        body.light-mode {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        body.light-mode header {
+            background-color: #fff;
+            color: #333;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        body.light-mode .key-card {
+            background-color: #fff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        body.light-mode .key-service,
+        body.light-mode .key-desc {
+            color: #333;
+        }
+
+        body.light-mode .key-desc {
+            color: #666;
+        }
+
+        body.light-mode ul.key-details {
+            color: #666;
+        }
+
+        body.light-mode ul.key-details li strong {
+            color: #555;
+        }
+
+        body.light-mode .edit-mode input,
+        body.light-mode .edit-mode select,
+        body.light-mode .edit-mode textarea {
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        body.light-mode .additional-field-container {
+            background: #f0f0f0;
+        }
+
+        body.light-mode .additional-field-group input {
+            background: #fff;
+            border: 1px solid #ddd;
+            color: #333;
+        }
+
+        body.light-mode .error-message {
+            color: #fff;
+        }
+        .edit-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .edit-buttons button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .save-btn {
+            background-color: #43b581;
+        }
+
+        .save-btn:hover {
+            background-color: #3aa371;
+            transform: translateY(-2px);
+        }
+
+        .cancel-btn {
+            background-color: #f04747;
+        }
+
+        .cancel-btn:hover {
+            background-color: #d83c3c;
+            transform: translateY(-2px);
+        }
+
+        .search-container {
+            display: flex;
+            margin: 0 auto 20px;
+            max-width: 600px;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .search-container input {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: none;
+            background-color: #40444b;
+            color: white;
+            font-size: 16px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            min-width: 0;
+        }
+
+        .search-container input:focus {
+            outline: none;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            background-color: #484c54;
+        }
+
+        .search-container button {
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: none;
+            background-color: #7289da;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .search-container button:hover {
+            background-color: #5b6eae;
+        }
+
+        /* Light mode styles */
+        body.light-mode .search-container input {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        body.light-mode .search-container input:focus {
+            background-color: #e0e0e0;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .search-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .search-container button {
+                width: 100%;
+            }
+            
+            .top-actions {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .top-actions button {
+                width: 100%;
+                margin: 0;
+            }
+            
+            .key-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .logo {
+                justify-content: center;
+            }
+            
+            .theme-toggle-btn, .logout-btn {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+
+        /* Loading indicator */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #7289da;
+            font-size: 18px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #7289da;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* No results message */
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #bbb;
+            font-size: 18px;
+            grid-column: 1 / -1;
+        }
+
+        .api-key-value {
+            font-family: monospace;
+            background-color: rgba(0,0,0,0.2);
+            padding: 2px 5px;
+            border-radius: 3px;
+            word-break: break-all;
+        }
+
+        .status-active {
+            color: #43b581;
+            font-weight: bold;
+        }
+
+        .status-inactive {
+            color: #f04747;
+            font-weight: bold;
+        }
+
+        .toggle-key-btn {
+            background: none;
+            border: none;
+            color: #7289da;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+
+        /* Date time input styling */
+        input[type="datetime-local"] {
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            background-color: #2f3136;
+            color: white;
+        }
+
+        .light-mode input[type="datetime-local"] {
+            background-color: white;
+            color: black;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <img src="https://i.ibb.co/KjnRR0ky/image-2025-04-02-195727739.png" alt="DevTick Logo">
+        <span class="DevTickHeader">DevTick</span>
+    </div>
+    <div>
+        <button class="theme-toggle-btn" onclick="toggleTheme()">☀️</button>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+</header>
+
+{% if error %}
+    {% if success %}
+    <div class="error-message" style="background-color: #43b581;">
+        {{ error }}
+        <span class="close-error" onclick="this.parentElement.style.display='none'">×</span>
+    </div>
+    {% else %}
+    <div class="error-message">
+        {{ error }}
+        <span class="close-error" onclick="this.parentElement.style.display='none'">×</span>
+    </div>
+    {% endif %}
+{% endif %}
+
+<h2>Your API Keys</h2>
+
+<div class="search-container">
+    <input type="text" id="search-input" placeholder="Search API keys..." required>
+    <button type="button" id="search-btn">Search</button>
+    <button type="button" id="clear-search-btn">Clear</button>
+</div>
+
+<div class="top-actions">
+    {% if not deleted %}
+    <button onclick="window.location.href='/keys/checkdeleted'">🗑️ Check Deleted Keys</button>
+    {% else %}
+    <button onclick="window.location.href='/keys/getKeys'">Check Active Keys</button>
+    {% endif %}
+    <button onclick="window.location.href='/keys/createkey'">+ New API Key</button>
+    <button onclick="window.location.href='/'">🏠 Home</button>
+</div>
+
+<div class="loading">
+    <div class="spinner"></div>
+    <p>Searching API keys...</p>
+</div>
+
+<div class="key-container" id="key-container">
+    {% for key in keys %}
+    <div class="key-card" id="key-card-{{ key.id }}">
+        <div class="key-service" id="key-service-{{ key.id }}">{{ key.serviceName }}</div>
+        <div class="key-desc" id="key-desc-{{ key.id }}">{{ key.description }}</div>
+
+        <ul class="key-details">
+            <li><strong>Status:</strong> 
+                <span class="status-{{ 'active' if key.isActive else 'inactive' }}">
+                    {{ 'Active' if key.isActive else 'Inactive' }}
+                </span>
+            </li>
+            
+            <li><strong>API Key:</strong> 
+                <span class="api-key-value" id="api-key-value-{{ key.id }}">••••••••••••••••</span>
+                <button class="toggle-key-btn" onclick="toggleKeyVisibility('{{ key.id }}', '{{ key.apiKey }}')">👁️ Show</button>
+            </li>
+            
+            {% if key.createdAt %}
+            <li><strong>Created At:</strong> <span>{{ key.createdAt }}</span></li>
+            {% endif %}
+            
+            {% if key.expiresAt %}
+            <li><strong>Expires At:</strong> <span>{{ key.expiresAt }}</span></li>
+            {% endif %}
+            
+            {% for i in range(key.additionalFields|length) %}
+                {% if key.additionalFields[i] or key.additionalValues[i] %}
+                <li>
+                    <strong>{{ key.additionalFields[i] or "Field" }}:</strong>
+                    <span>{{ key.additionalValues[i] or "" }}</span>
+                </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+
+        <div class="key-actions">
+            {% if not deleted %}
+            <button onclick="editKey('{{ key.id }}')" class="action-btn">Edit</button>
+
+                <form method="POST" action="/keys/deletekey/{{ key.id }}" class="inline-form">
+                    <button type="submit" class="action-btn delete-btn">Delete</button>
+                </form>
+            {% else %}
+                <form method="POST" action="/keys/recoverkey/{{ key.id }}" class="inline-form">
+                    <button type="submit" class="action-btn recover-btn">Recover</button>
+                </form>
+            {% endif %}
+        </div>
+
+        <div class="edit-mode" id="edit-mode-{{ key.id }}">
+            <form method="POST" action="/keys/editkey/{{ key.id }}" id="edit-form-{{ key.id }}">
+                <label for="serviceName-{{ key.id }}">Service Name:</label>
+                <input type="text" id="serviceName-{{ key.id }}" name="serviceName" value="{{ key.serviceName }}" required>
+
+                <label for="apiKey-{{ key.id }}">API Key:</label>
+                <input type="text" id="apiKey-{{ key.id }}" name="apiKey" value="{{ key.apiKey }}" required>
+
+                <label for="description-{{ key.id }}">Description:</label>
+                <textarea id="description-{{ key.id }}" name="description">{{ key.description }}</textarea>
+
+                <label for="createdAt-{{ key.id }}">Created At:</label>
+                <input type="datetime-local" id="createdAt-{{ key.id }}" name="createdAt" value="{{ key.createdAt }}">
+
+                <label for="expiresAt-{{ key.id }}">Expires At:</label>
+                <input type="datetime-local" id="expiresAt-{{ key.id }}" name="expiresAt" value="{{ key.expiresAt }}">
+
+                <label for="isActive-{{ key.id }}">Status:</label>
+                <select id="isActive-{{ key.id }}" name="isActive">
+                    <option value="true" {% if key.isActive %}selected{% endif %}>Active</option>
+                    <option value="false" {% if not key.isActive %}selected{% endif %}>Inactive</option>
+                </select>
+
+                <div class="additional-field-container">
+                    <h4>Additional Fields:</h4>
+                    {% for i in range(key.additionalFields|length) %}
+                    <div class="additional-field-group">
+                        <input type="text" name="additionalFields[]" value="{{ key.additionalFields[i] }}" placeholder="Field name">
+                        <input type="text" name="additionalValues[]" value="{{ key.additionalValues[i] }}" placeholder="Field value">
+                        <button type="button" class="remove-field-btn" onclick="removeAdditionalField(this)">Remove</button>
+                    </div>
+                    {% endfor %}
+                    <button type="button" class="add-field-btn" onclick="addAdditionalField(this)">+ Add Field</button>
+                </div>
+
+                <div class="edit-buttons">
+                    <button type="submit" class="save-btn">💾 Save</button>
+                    <button type="button" class="cancel-btn" onclick="cancelEdit('{{ key.id }}')">✖ Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    // Store all keys initially
+    let allKeys = [];
+
+    // Get all keys when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        // Extract keys from the HTML (they're already rendered server-side)
+        const keyCards = document.querySelectorAll('.key-card');
+        allKeys = Array.from(keyCards).map(card => {
+            return {
+                element: card,
+                service: card.querySelector('.key-service').textContent.toLowerCase(),
+                description: card.querySelector('.key-desc').textContent.toLowerCase(),
+                details: card.querySelector('.key-details').textContent.toLowerCase()
+            };
+        });
+        
+        // Format datetime-local inputs
+        document.querySelectorAll('input[type="datetime-local"]').forEach(input => {
+            if (input.value) {
+                // Convert server format to local datetime-local format if needed
+                const date = new Date(input.value);
+                const formatted = date.toISOString().slice(0, 16);
+                input.value = formatted;
+            }
+        });
+        
+        // Add event listener for Enter key in search input
+        document.getElementById('search-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+        
+        // Add click event for search button
+        document.getElementById('search-btn').addEventListener('click', performSearch);
+        
+        // Add click event for clear button
+        document.getElementById('clear-search-btn').addEventListener('click', clearSearch);
+    });
+
+    function performSearch() {
+        const query = document.getElementById('search-input').value.trim().toLowerCase();
+        
+        if (query.length === 0) {
+            clearSearch();
+            return;
+        }
+        
+        showLoading(true);
+        
+        // Hide all keys first
+        allKeys.forEach(key => {
+            key.element.style.display = 'none';
+        });
+        
+        // Filter keys that match the search query
+        const matchingKeys = allKeys.filter(key => {
+            return key.service.includes(query) || 
+                   key.description.includes(query) || 
+                   key.details.includes(query);
+        });
+        
+        // Show matching keys
+        matchingKeys.forEach(key => {
+            key.element.style.display = 'block';
+        });
+        
+        // Show no results message if no matches
+        const keyContainer = document.getElementById('key-container');
+        if (matchingKeys.length === 0) {
+            // Remove any existing no-results message
+            const existingNoResults = document.querySelector('.no-results');
+            if (existingNoResults) {
+                existingNoResults.remove();
+            }
+            
+            const noResults = document.createElement('div');
+            noResults.className = 'no-results';
+            noResults.textContent = 'No API keys found matching your search.';
+            keyContainer.appendChild(noResults);
+        } else {
+            // Remove any existing no-results message
+            const existingNoResults = document.querySelector('.no-results');
+            if (existingNoResults) {
+                existingNoResults.remove();
+            }
+        }
+        
+        showLoading(false);
+    }
+
+    function clearSearch() {
+        document.getElementById('search-input').value = '';
+        
+        // Show all keys
+        allKeys.forEach(key => {
+            key.element.style.display = 'block';
+        });
+        
+        // Remove any no-results message
+        const existingNoResults = document.querySelector('.no-results');
+        if (existingNoResults) {
+            existingNoResults.remove();
+        }
+    }
+
+    function showLoading(show) {
+        const loadingIndicator = document.querySelector('.loading');
+        if (show) {
+            loadingIndicator.style.display = 'block';
+        } else {
+            loadingIndicator.style.display = 'none';
+        }
+    }
+
+    function editKey(keyId) {
+        // Highlight the card being edited
+        document.getElementById(`key-card-${keyId}`).classList.add('editing');
+        
+        // Hide all key details
+        const elementsToHide = [
+            `key-service-${keyId}`,
+            `key-desc-${keyId}`
+        ];
+        
+        elementsToHide.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'none';
+        });
+        
+        // Hide the action buttons
+        document.querySelector(`#key-card-${keyId} .key-actions`).style.display = 'none';
+        
+        // Show the edit form
+        document.getElementById(`edit-mode-${keyId}`).style.display = 'block';
+        
+        // Scroll to the key card if it's not fully visible
+        document.getElementById(`key-card-${keyId}`).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function cancelEdit(keyId) {
+        // Remove editing highlight
+        document.getElementById(`key-card-${keyId}`).classList.remove('editing');
+        
+        // Show all key details
+        const elementsToShow = [
+            `key-service-${keyId}`,
+            `key-desc-${keyId}`
+        ];
+        
+        elementsToShow.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'block';
+        });
+        
+        // Show the action buttons
+        document.querySelector(`#key-card-${keyId} .key-actions`).style.display = 'flex';
+        
+        // Hide the edit form
+        document.getElementById(`edit-mode-${keyId}`).style.display = 'none';
+    }
+
+    function toggleTheme() {
+        const body = document.body;
+        const isDarkMode = body.classList.contains('dark-mode');
+        
+        if (isDarkMode) {
+            body.classList.remove('dark-mode');
+            body.classList.add('light-mode');
+            localStorage.setItem('theme', 'light');
+            document.querySelector('.theme-toggle-btn').textContent = '🌙';
+        } else {
+            body.classList.remove('light-mode');
+            body.classList.add('dark-mode');
+            localStorage.setItem('theme', 'dark');
+            document.querySelector('.theme-toggle-btn').textContent = '☀️';
+        }
+        
+        // Force redraw of any open edit modes
+        document.querySelectorAll('.edit-mode').forEach(editMode => {
+            editMode.style.display = 'none';
+            setTimeout(() => {
+                if (editMode.parentElement.classList.contains('editing')) {
+                    editMode.style.display = 'block';
+                }
+            }, 10);
+        });
+    }
+
+    // Check for saved theme preference on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        const body = document.body;
+        
+        if (savedTheme === 'light') {
+            body.classList.add('light-mode');
+            document.querySelector('.theme-toggle-btn').textContent = '🌙';
+        } else {
+            body.classList.add('dark-mode');
+            document.querySelector('.theme-toggle-btn').textContent = '☀️';
+        }
+    });
+
+    function logout() {
+        if (confirm("You are about to log out of DevTick!")) {
+            window.location.href = "/auth/logout";
+        }
+    }
+
+    // Function to toggle API key visibility
+    function toggleKeyVisibility(keyId, actualKey) {
+        const displayElement = document.getElementById(`api-key-value-${keyId}`);
+        const button = document.querySelector(`#key-card-${keyId} .toggle-key-btn`);
+        
+        if (displayElement.textContent === '••••••••••••••••') {
+            displayElement.textContent = actualKey;
+            button.textContent = '🙈 Hide';
+        } else {
+            displayElement.textContent = '••••••••••••••••';
+            button.textContent = '👁️ Show';
+        }
+    }
+
+    // Function to add new additional field with validation
+    function addAdditionalField(button) {
+        const container = button.parentNode;
+        const existingFields = container.querySelectorAll('.additional-field-group');
+        
+        // Check if last field is empty
+        if (existingFields.length > 0) {
+            const lastField = existingFields[existingFields.length - 1];
+            const nameInput = lastField.querySelector('input[name="additionalFields[]"]');
+            const valueInput = lastField.querySelector('input[name="additionalValues[]"]');
+            
+            if (nameInput.value.trim() === '' || valueInput.value.trim() === '') {
+                alert('Please fill in both field name and value before adding a new one');
+                return;
+            }
+        }
+        
+        const fieldGroup = document.createElement('div');
+        fieldGroup.className = 'additional-field-group';
+        fieldGroup.innerHTML = `
+            <input type="text" name="additionalFields[]" placeholder="Field name" required>
+            <input type="text" name="additionalValues[]" placeholder="Field value" required>
+            <button type="button" class="remove-field-btn" onclick="removeAdditionalField(this)">Remove</button>
+        `;
+        container.insertBefore(fieldGroup, button);
+    }
+
+    // Function to remove additional field
+    function removeAdditionalField(button) {
+        const container = button.closest('.additional-field-container');
+        const fieldGroups = container.querySelectorAll('.additional-field-group');
+        
+        // Don't allow removing if it's the only field
+        if (fieldGroups.length <= 1) {
+            alert('You need at least one additional field');
+            return;
+        }
+        
+        button.parentNode.remove();
+    }
+
+    // Prevent form submission if any additional field is incomplete
+    document.querySelectorAll('[id^="edit-form-"]').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const container = this.querySelector('.additional-field-container');
+            if (container) {
+                const fields = container.querySelectorAll('.additional-field-group');
+                
+                for (let field of fields) {
+                    const nameInput = field.querySelector('input[name="additionalFields[]"]');
+                    const valueInput = field.querySelector('input[name="additionalValues[]"]');
+                    
+                    // Check if one is filled but not the other
+                    if ((nameInput.value.trim() === '' && valueInput.value.trim() !== '') || 
+                        (nameInput.value.trim() !== '' && valueInput.value.trim() === '')) {
+                        alert('Please fill in both field name and value for all additional fields');
+                        e.preventDefault();
+                        return;
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

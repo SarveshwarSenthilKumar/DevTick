@@ -20,11 +20,28 @@ def create_key():
 
             serviceName = request.form.get("serviceName")
             apiKey = request.form.get("apiKey")
+            createdAt = request.form.get("createdDate")
             description = request.form.get("description")
-            expirationDate = request.form.get("expirationDate")
+            expirationDate = request.form.get("expiryDate")
 
             db = SQL("sqlite:///databases/apikeys.db")
-            db.execute("INSERT INTO apikeys (ownedBy, serviceName, apiKey, description, expiresAt, isActive, additionalFields, additionalValues) VALUES (?,?,?,?,?,?,?,?)", session.get("id"), serviceName, apiKey, description, expirationDate, "Active", json.dumps(additional_field_titles), json.dumps(additional_field_values))
+            db.execute("INSERT INTO apikeys (ownedBy, serviceName, apiKey, description, createdAt, expiresAt, isActive, additionalFields, additionalValues) VALUES (?,?,?,?,?,?,?,?,?)", session.get("id"), serviceName, apiKey, description, createdAt, expirationDate, "Active", json.dumps(additional_field_titles), json.dumps(additional_field_values))
 
             return render_template("sentence.html", sentences=["You have successfully created an API key!"])
         
+@keys_blueprint.route("/getKeys", methods=["GET", "POST"])
+def getKeys():
+    if not session.get("name"):
+        return redirect("/")
+    else:
+        db = SQL("sqlite:///databases/apikeys.db")
+        keys = db.execute("SELECT * FROM apikeys WHERE ownedBy = :id and isActive = :active", id=session.get("id"), active="Active") 
+
+        for key in keys:
+            key["additionalFields"] = json.loads(key["additionalFields"])
+            key["additionalValues"] = json.loads(key["additionalValues"])
+
+        return render_template("viewKeys.html", keys=keys)
+    
+
+#edit, delete, restore, checkdeleted, 
