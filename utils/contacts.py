@@ -86,9 +86,6 @@ def edit_contact(contact_id):
 
     return render_template("viewContacts.html", contacts=contacts)
 
-
-
-
 @contacts_blueprint.route("/checkdeleted", methods=["GET"])
 def viewdeleted():
     if not session.get("name"):

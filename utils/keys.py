@@ -44,4 +44,35 @@ def getKeys():
         return render_template("viewKeys.html", keys=keys)
     
 
-#edit, delete, restore, checkdeleted, 
+@keys_blueprint.route("/deletekey/<int:key_id>", methods=["POST"])
+def delete_key(key_id):
+    if not session.get("name"):
+        return redirect("/")
+    
+    db = SQL("sqlite:///databases/apikeys.db")
+    
+    key = db.execute("SELECT id FROM apikeys WHERE id = :id AND ownedBy = :owner", 
+                     id=key_id, owner=session.get("id"))
+    if not key:
+        db = SQL("sqlite:///databases/apikeys.db")
+        keys = db.execute("SELECT * FROM apikeys WHERE ownedBy = :id", id=session.get("id"))
+
+        for key in keys:
+            key["additionalFields"] = json.loads(key["additionalFields"])
+            key["additionalValues"] = json.loads(key["additionalValues"])
+
+        return render_template("viewKeys.html", keys=keys, error="Task cannot be found!")
+    
+    else:
+        db.execute("UPDATE apikeys SET isActive = :status WHERE id = :id AND ownedBy = :owner", status="Deleted", id=key_id, owner=session.get("id"))
+
+    db = SQL("sqlite:///databases/apikeys.db")
+    keys = db.execute("SELECT * FROM apikeys WHERE ownedBy = :id AND isActive != :status", id=session.get("id"), status="Deleted")
+
+    for key in keys:
+        key["additionalFields"] = json.loads(key["additionalFields"])
+        key["additionalValues"] = json.loads(key["additionalValues"])
+
+    return render_template("viewKeys.html", keys=keys, error="Key has been deleted successfully!", success=True)
+
+#edit, restore, checkdeleted, 
