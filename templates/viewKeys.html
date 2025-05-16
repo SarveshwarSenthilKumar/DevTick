@@ -626,8 +626,8 @@
 
         <ul class="key-details">
             <li><strong>Status:</strong> 
-                <span class="status-{{ 'active' if key.isActive else 'inactive' }}">
-                    {{ 'Active' if key.isActive else 'Inactive' }}
+                <span class="status-{{ 'active' if key.isActive == 'Active' else 'inactive' }}">
+                    {{ 'Active' if key.isActive == 'Active' else 'Inactive' }}
                 </span>
             </li>
             
@@ -680,15 +680,15 @@
                 <textarea id="description-{{ key.id }}" name="description">{{ key.description }}</textarea>
 
                 <label for="createdAt-{{ key.id }}">Created At:</label>
-                <input type="datetime-local" id="createdAt-{{ key.id }}" name="createdAt" value="{{ key.createdAt }}">
+                <input type="date" id="createdAt-{{ key.id }}" name="createdAt" value="{{ key.createdAt }}">
 
                 <label for="expiresAt-{{ key.id }}">Expires At:</label>
-                <input type="datetime-local" id="expiresAt-{{ key.id }}" name="expiresAt" value="{{ key.expiresAt }}">
+                <input type="date" id="expiresAt-{{ key.id }}" name="expiresAt" value="{{ key.expiresAt }}">
 
                 <label for="isActive-{{ key.id }}">Status:</label>
                 <select id="isActive-{{ key.id }}" name="isActive">
-                    <option value="true" {% if key.isActive %}selected{% endif %}>Active</option>
-                    <option value="false" {% if not key.isActive %}selected{% endif %}>Inactive</option>
+                    <option value="Active" {% if key.isActive %}selected{% endif %}>Active</option>
+                    <option value="Inactive" {% if not key.isActive %}selected{% endif %}>Inactive</option>
                 </select>
 
                 <div class="additional-field-container">

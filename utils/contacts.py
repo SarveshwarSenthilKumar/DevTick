@@ -78,7 +78,6 @@ def edit_contact(contact_id):
     
     db = SQL("sqlite:///databases/contacts.db")
     contacts = db.execute("SELECT * FROM contacts WHERE ownedBy = :id AND status != :status", id=session.get("id"), status="Deleted")
-    print(contacts)
 
     for contact in contacts:
         contact["additionalFields"] = json.loads(contact["additionalFields"])

@@ -35,14 +35,13 @@ def getKeys():
         return redirect("/")
     else:
         db = SQL("sqlite:///databases/apikeys.db")
-        keys = db.execute("SELECT * FROM apikeys WHERE ownedBy = :id and isActive = :active", id=session.get("id"), active="Active") 
+        keys = db.execute("SELECT * FROM apikeys WHERE ownedBy = :id and isActive != :deleted", id=session.get("id"), deleted="Deleted") 
 
         for key in keys:
             key["additionalFields"] = json.loads(key["additionalFields"])
             key["additionalValues"] = json.loads(key["additionalValues"])
 
         return render_template("viewKeys.html", keys=keys)
-    
 
 @keys_blueprint.route("/deletekey/<int:key_id>", methods=["POST"])
 def delete_key(key_id):
@@ -74,5 +73,39 @@ def delete_key(key_id):
         key["additionalValues"] = json.loads(key["additionalValues"])
 
     return render_template("viewKeys.html", keys=keys, error="Key has been deleted successfully!", success=True)
+
+@keys_blueprint.route("/editkey/<int:key_id>", methods=["POST"])
+def edit_key(key_id):
+    if not session.get("name"):
+        return redirect("/")
+    
+    db = SQL("sqlite:///databases/apikeys.db")
+    
+    key = db.execute("SELECT id FROM apikeys WHERE id = :id AND ownedBy = :owner", 
+                     id=key_id, owner=session.get("id"))
+    if not key:
+        db = SQL("sqlite:///databases/apikeys.db")
+        keys = db.execute("SELECT * FROM apikeys WHERE ownedBy = :id", id=session.get("id"))
+
+        for key in keys:
+            key["additionalFields"] = json.loads(key["additionalFields"])
+            key["additionalValues"] = json.loads(key["additionalValues"])
+
+        return render_template("viewKeys.html", keys=keys, error="Task cannot be found!")
+    
+    additional_fields = request.form.getlist('additionalFields[]')
+    additional_values = request.form.getlist('additionalValues[]')
+    
+    db.execute("UPDATE apikeys SET serviceName = :serviceName, apiKey = :apiKey, description = :description, createdAt = :createdAt, expiresAt = :expiresAt, isActive = :isActive, additionalFields = :additionalFields, additionalValues = :additionalValues WHERE id = :id AND ownedBy = :owner", serviceName=request.form.get("serviceName"), apiKey=request.form.get("apiKey"), description=request.form.get("description"), createdAt=request.form.get("createdAt"), expiresAt=request.form.get("expiresAt"), isActive=request.form.get("isActive"), additionalFields=json.dumps(additional_fields), additionalValues=json.dumps(additional_values), id=key_id, owner=session.get("id"))
+    
+    db = SQL("sqlite:///databases/apikeys.db")
+    keys = db.execute("SELECT * FROM apikeys WHERE ownedBy = :id AND isActive != :status", id=session.get("id"), status="Deleted")
+
+    for key in keys:
+        key["additionalFields"] = json.loads(key["additionalFields"])
+        key["additionalValues"] = json.loads(key["additionalValues"])
+
+    return render_template("viewKeys.html", keys=keys)
+
 
 #edit, restore, checkdeleted, 
