@@ -87,7 +87,7 @@ def edit_key(key_id):
         db = SQL("sqlite:///databases/apikeys.db")
         keys = db.execute("SELECT * FROM apikeys WHERE ownedBy = :id", id=session.get("id"))
 
-        for key in keys:
+        for key in keys: 
             key["additionalFields"] = json.loads(key["additionalFields"])
             key["additionalValues"] = json.loads(key["additionalValues"])
 
@@ -107,5 +107,18 @@ def edit_key(key_id):
 
     return render_template("viewKeys.html", keys=keys)
 
+@keys_blueprint.route("/checkdeleted", methods=["GET"])
+def viewdeleted():
+    if not session.get("name"):
+        return redirect("/")
+    
+    db = SQL("sqlite:///databases/apikeys.db")
+    keys = db.execute("SELECT * FROM apikeys WHERE ownedBy = :id AND isActive = :isActive", id=session.get("id"), isActive="Deleted")
 
-#edit, restore, checkdeleted, 
+    for key in keys:
+        key["additionalFields"] = json.loads(key["additionalFields"])
+        key["additionalValues"] = json.loads(key["additionalValues"])
+
+    return render_template("viewKeys.html", keys=keys, deleted=True)
+
+#restore 
