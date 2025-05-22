@@ -227,6 +227,75 @@
         .light-mode .DevTickHeader {
             color: black;
         }
+        /* API Key Generator Styles */
+        .api-key-generator {
+            display: none;
+            background-color: #40444b;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+
+        .api-key-generator.active {
+            display: block;
+        }
+
+        .api-key-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .api-key-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .api-key-length {
+            width: 60px;
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #444;
+            background-color: #2f3136;
+            color: white;
+        }
+
+        .generated-key {
+            font-family: monospace;
+            background-color: #2f3136;
+            padding: 10px;
+            border-radius: 4px;
+            word-break: break-all;
+            margin-bottom: 10px;
+        }
+
+        .copy-key-btn {
+            background-color: #7289da;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .copy-key-btn:hover {
+            background-color: #5b6eae;
+        }
+
+        .light-mode .api-key-generator,
+        .light-mode .generated-key {
+            background-color: #e5e5e5;
+            color: black;
+        }
+
+        .light-mode .api-key-length {
+            background-color: #f9f9f9;
+            color: black;
+        }
     </style>
 </head>
 <body class="dark-mode">
@@ -284,9 +353,43 @@
         <h3 class="section-title">API Key Management</h3>
         <div class="button-group">
             <button onclick="addApiKey()">Add API Key</button>
-            <button onclick="searchApiKey()">Generate API Key</button>
+            <button onclick="toggleKeyGenerator()">Generate API Key</button>
             <button onclick="viewApiKeys()">View All API Keys</button>
         </div>
+        
+        <!-- API Key Generator -->
+        <div class="api-key-generator" id="api-key-generator">
+            <div class="api-key-options">
+                <div class="api-key-option">
+                    <label>Length:</label>
+                    <input type="number" class="api-key-length" id="key-length" value="32" min="8" max="256">
+                </div>
+                <div class="api-key-option">
+                    <input type="checkbox" id="uppercase" checked>
+                    <label for="uppercase">A-Z</label>
+                </div>
+                <div class="api-key-option">
+                    <input type="checkbox" id="lowercase" checked>
+                    <label for="lowercase">a-z</label>
+                </div>
+                <div class="api-key-option">
+                    <input type="checkbox" id="numbers" checked>
+                    <label for="numbers">0-9</label>
+                </div>
+                <div class="api-key-option">
+                    <input type="checkbox" id="special-chars">
+                    <label for="special-chars">!@#$%^&*</label>
+                </div>
+            </div>
+            
+            <div class="generated-key" id="generated-key">Click "Generate" to create a key</div>
+            
+            <div class="button-group">
+                <button onclick="generateApiKey()">Generate</button>
+                <button class="copy-key-btn" onclick="copyApiKey()">Copy</button>
+            </div>
+        </div>
+        
         <input type="text" class="search-bar" placeholder="Search API keys..." oninput="searchApiKeys()">
         <ul class="api-keys-list" id="api-keys-list">
             <!-- API Keys will be dynamically added here -->
@@ -334,7 +437,7 @@
     function checkContacts() { window.location.href = "/contacts/getContacts"; }
     function createContact() { window.location.href = "/contacts/createcontact"; }
     function addApiKey() { window.location.href = "/keys/createkey"; }
-    function searchApiKey() { alert("Searching API key..."); }
+    function searchApiKey() { toggleKeyGenerator(); }
     function viewApiKeys() { window.location.href = "/keys/getKeys";}
     function viewProjectIdeas() { alert("Viewing project ideas..."); }
     function createProjectIdea() { alert("Creating new project idea..."); }
@@ -368,6 +471,50 @@
             window.location.href = "/auth/logout";
         }
     }
+
+    // API Key Generator Functions
+    function toggleKeyGenerator() {
+        const generator = document.getElementById('api-key-generator');
+        generator.classList.toggle('active');
+    }
+
+    function generateApiKey() {
+        const length = parseInt(document.getElementById('key-length').value);
+        const uppercase = document.getElementById('uppercase').checked;
+        const lowercase = document.getElementById('lowercase').checked;
+        const numbers = document.getElementById('numbers').checked;
+        const specialChars = document.getElementById('special-chars').checked;
+        
+        let charset = '';
+        if (uppercase) charset += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        if (lowercase) charset += 'abcdefghijklmnopqrstuvwxyz';
+        if (numbers) charset += '0123456789';
+        if (specialChars) charset += '!@#$%^&*';
+        
+        if (!charset) {
+            alert('Please select at least one character type');
+            return;
+        }
+        
+        let key = '';
+        for (let i = 0; i < length; i++) {
+            const randomIndex = Math.floor(Math.random() * charset.length);
+            key += charset[randomIndex];
+        }
+        
+        document.getElementById('generated-key').textContent = key;
+    }
+
+    function copyApiKey() {
+        const key = document.getElementById('generated-key').textContent;
+        if (key && key !== 'Click "Generate" to create a key') {
+            navigator.clipboard.writeText(key)
+
+        } else {
+            alert('Generate an API key first');
+        }
+    }
+
 </script>
 
 </body>
