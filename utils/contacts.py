@@ -148,7 +148,7 @@ def recover_contact(contact_id):
             contact["additionalFields"] = json.loads(contact["additionalFields"])
             contact["additionalValues"] = json.loads(contact["additionalValues"])
 
-        return render_template("viewTasks.html", contacts=contacts, error="Task cannot be found!")
+        return render_template("viewContacts.html", contacts=contacts, error="Contact cannot be found!")
     
     else:
         tz_NY = pytz.timezone('America/New_York') 
@@ -166,4 +166,4 @@ def recover_contact(contact_id):
         contact["additionalFields"] = json.loads(contact["additionalFields"])
         contact["additionalValues"] = json.loads(contact["additionalValues"])
 
-    return render_template("viewContacts.html", tasks=tasks, error="Task has been recovered successfully!", success=True)
+    return render_template("viewContacts.html", contacts=contacts, error="Contact has been recovered successfully!", success=True)

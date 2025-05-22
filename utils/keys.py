@@ -36,7 +36,7 @@ def getKeys():
     else:
         db = SQL("sqlite:///databases/apikeys.db")
         keys = db.execute("SELECT * FROM apikeys WHERE ownedBy = :id and isActive != :deleted", id=session.get("id"), deleted="Deleted") 
-
+        
         for key in keys:
             key["additionalFields"] = json.loads(key["additionalFields"])
             key["additionalValues"] = json.loads(key["additionalValues"])
@@ -121,4 +121,40 @@ def viewdeleted():
 
     return render_template("viewKeys.html", keys=keys, deleted=True)
 
+@keys_blueprint.route("/recoverkey/<int:key_id>", methods=["GET", "POST"])
+def recover_key(key_id):
+    if not session.get("name"):
+        return redirect("/")
+    
+    db = SQL("sqlite:///databases/apikeys.db")
+    
+    key = db.execute("SELECT id FROM apikeys WHERE id = :id AND ownedBy = :owner", 
+                     id=key_id, owner=session.get("id"))
+    if not key:
+        db = SQL("sqlite:///databases/apikeys.db")
+        keys = db.execute("SELECT * FROM apikeys WHERE ownedBy = :id", id=session.get("id"))
+
+        for key in keys:
+            key["additionalFields"] = json.loads(key["additionalFields"])
+            key["additionalValues"] = json.loads(key["additionalValues"])
+
+        return render_template("viewKeys.html", keys=keys, error="Key cannot be found!")
+    
+    else:
+        tz_NY = pytz.timezone('America/New_York') 
+        now = datetime.now(tz_NY)
+        recoveredOn = now.strftime("%d/%m/%Y %H:%M:%S")
+
+        status = "Recovered on " + recoveredOn
+
+        db.execute("UPDATE apikeys SET isActive = :isActive WHERE id = :id AND ownedBy = :owner", isActive=status, id=key_id, owner=session.get("id"))
+
+    db = SQL("sqlite:///databases/apikeys.db")
+    keys = db.execute("SELECT * FROM apikeys WHERE ownedBy = :id AND isActive != :isActive", id=session.get("id"), isActive="Deleted")
+
+    for key in keys:
+        key["additionalFields"] = json.loads(key["additionalFields"])
+        key["additionalValues"] = json.loads(key["additionalValues"])
+
+    return render_template("viewKeys.html", keys=keys, error="Key has been recovered successfully!", success=True)
 #restore 
