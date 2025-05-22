@@ -51,7 +51,6 @@ def getContacts():
 
         return render_template("viewContacts.html", contacts=contacts)
     
-
 @contacts_blueprint.route("/editcontact/<int:contact_id>", methods=["POST"])
 def edit_contact(contact_id):
     if not session.get("name"):
@@ -129,7 +128,6 @@ def delete_contact(contact_id):
         contact["additionalValues"] = json.loads(contact["additionalValues"])
 
     return render_template("viewContacts.html", contacts=contacts, error="Contact has been deleted successfully!", success=True)
-
 
 @contacts_blueprint.route("/recovercontact/<int:contact_id>", methods=["GET", "POST"])
 def recover_contact(contact_id):

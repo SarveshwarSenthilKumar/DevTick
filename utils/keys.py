@@ -36,7 +36,7 @@ def getKeys():
     else:
         db = SQL("sqlite:///databases/apikeys.db")
         keys = db.execute("SELECT * FROM apikeys WHERE ownedBy = :id and isActive != :deleted", id=session.get("id"), deleted="Deleted") 
-        
+
         for key in keys:
             key["additionalFields"] = json.loads(key["additionalFields"])
             key["additionalValues"] = json.loads(key["additionalValues"])
@@ -157,4 +157,3 @@ def recover_key(key_id):
         key["additionalValues"] = json.loads(key["additionalValues"])
 
     return render_template("viewKeys.html", keys=keys, error="Key has been recovered successfully!", success=True)
-#restore 

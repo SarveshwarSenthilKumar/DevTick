@@ -23,9 +23,9 @@ authentication = True #Change to False if you want to disable user authenticatio
 if authentication:
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
 
-app.register_blueprint(tasks_blueprint, url_prefix='/tasks')
-app.register_blueprint(contacts_blueprint, url_prefix='/contacts')
-app.register_blueprint(keys_blueprint, url_prefix='/keys')
+app.register_blueprint(tasks_blueprint, url_prefix='/tasks') # Set up tasks functionality
+app.register_blueprint(contacts_blueprint, url_prefix='/contacts') # Set up contacts functionality
+app.register_blueprint(keys_blueprint, url_prefix='/keys') # Set up keys functionality
 
 #This route is the base route for the website which renders the landing page, then homepage if logged in
 @app.route("/", methods=["GET", "POST"])
