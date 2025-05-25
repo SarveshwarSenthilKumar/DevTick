@@ -4,6 +4,7 @@ from datetime import datetime
 import pytz
 from utils.sql import * #Used for database connection and management
 import json
+import traceback
 
 keys_blueprint = Blueprint('keys', __name__)
 
@@ -157,3 +158,37 @@ def recover_key(key_id):
         key["additionalValues"] = json.loads(key["additionalValues"])
 
     return render_template("viewKeys.html", keys=keys, error="Key has been recovered successfully!", success=True)
+@keys_blueprint.route("/search", methods=["POST"])
+def search_keys():
+    if not session.get("name"):
+        return jsonify({"error": "Not authenticated"}), 401
+    
+    search_term = request.json.get("search_term", "").strip()
+    if not search_term:
+        return jsonify({"error": "No search term provided"}), 400
+    
+    try:
+        db = SQL("sqlite:///databases/apikeys.db")
+        keys = db.execute("""
+            SELECT * FROM apikeys 
+            WHERE ownedBy = :id 
+            AND isActive != :status
+            AND (
+                serviceName LIKE :term 
+                OR description LIKE :term
+            )
+        """, id=session.get("id"), status="Deleted", term=f"%{search_term}%")
+        
+        for key in keys:
+            key["additionalFields"] = json.loads(key["additionalFields"])
+            key["additionalValues"] = json.loads(key["additionalValues"])
+        
+        return jsonify({"keys": keys})
+    except Exception as e:
+        error_details = {
+            "error": str(e),
+            "traceback": traceback.format_exc()
+        }
+        print(f"Error in search_keys: {error_details}")
+        return jsonify({"error": error_details}), 500
+

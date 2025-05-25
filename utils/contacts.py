@@ -4,6 +4,7 @@ from datetime import datetime
 import pytz
 from utils.sql import * #Used for database connection and management
 import json
+import traceback
 
 contacts_blueprint = Blueprint('contacts', __name__)
 
@@ -165,3 +166,61 @@ def recover_contact(contact_id):
         contact["additionalValues"] = json.loads(contact["additionalValues"])
 
     return render_template("viewContacts.html", contacts=contacts, error="Contact has been recovered successfully!", success=True)
+@contacts_blueprint.route("/search", methods=["POST"])
+def search_contacts():
+    if not session.get("name"):
+        return jsonify({"error": "Not authenticated"}), 401
+    
+    search_term = request.json.get("search_term", "").strip()
+    if not search_term:
+        return jsonify({"error": "No search term provided"}), 400
+    
+    try:
+        db = SQL("sqlite:///databases/contacts.db")
+        contacts = db.execute("""
+            SELECT * FROM contacts 
+            WHERE ownedBy = :id 
+            AND status != :status
+            AND (
+                name LIKE :term 
+                OR emailAddress LIKE :term 
+                OR company LIKE :term
+            )
+        """, id=session.get("id"), status="Deleted", term=f"%{search_term}%")
+        
+        for contact in contacts:
+            contact["additionalFields"] = json.loads(contact["additionalFields"])
+            contact["additionalValues"] = json.loads(contact["additionalValues"])
+        
+        return jsonify({"contacts": contacts})
+    except Exception as e:
+        error_details = {
+            "error": str(e),
+            "traceback": traceback.format_exc()
+        }
+        print(f"Error in search_contacts: {error_details}")
+        return jsonify({"error": error_details}), 500
+
+@contacts_blueprint.route("/getContactsJson", methods=["GET"])
+def getContactsJson():
+    if not session.get("name"):
+        return jsonify({"error": "Not authenticated"}), 401
+    
+    try:
+        db = SQL("sqlite:///databases/contacts.db")
+        contacts = db.execute("SELECT * FROM contacts WHERE ownedBy = :id AND status != :status", 
+                           id=session.get("id"), status="Deleted")
+
+        for contact in contacts:
+            contact["additionalFields"] = json.loads(contact["additionalFields"])
+            contact["additionalValues"] = json.loads(contact["additionalValues"])
+
+        return jsonify({"contacts": contacts})
+    except Exception as e:
+        error_details = {
+            "error": str(e),
+            "traceback": traceback.format_exc()
+        }
+        print(f"Error in getContactsJson: {error_details}")
+        return jsonify({"error": error_details}), 500
+

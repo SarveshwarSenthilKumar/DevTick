@@ -513,7 +513,7 @@
             <button onclick="checkTasks()">Check Tasks</button>
             <button onclick="createTask()">Create Task</button>
         </div>
-        <input type="text" class="search-bar" placeholder="Search tasks..." oninput="window.location.href = '/tasks/getTasks'">
+        <input type="text" class="search-bar" placeholder="Search tasks...">
         <ul class="tasks-list" id="tasks-list">
             <!-- Tasks will be dynamically added here -->
         </ul>
@@ -526,7 +526,7 @@
             <button onclick="checkContacts()">View Contacts</button>
             <button onclick="createContact()">Create Contact</button>
         </div>
-        <input type="text" class="search-bar" placeholder="Search contacts..." oninput="window.location.href = '/contacts/getContacts'">
+        <input type="text" class="search-bar" placeholder="Search contacts...">
         <ul class="contacts-list" id="contacts-list">
             <!-- Contacts will be dynamically added here -->
         </ul>
@@ -634,10 +634,113 @@
     function createProjectIdea() { alert("Creating new project idea..."); }
 
     // Search Functions
-    function searchTasks() { console.log("Searching tasks..."); }
-    function searchContacts() { console.log("Searching contacts..."); }
+    function searchTasks() {
+        const searchTerm = document.querySelector('.search-bar[placeholder="Search tasks..."]').value.trim();
+        if (!searchTerm) return;
+
+        fetch('/tasks/getTasksJson', {
+            method: 'GET'
+        })
+        .then(response => response.json())
+        .then(data => {
+            const tasksList = document.getElementById('tasks-list');
+            tasksList.innerHTML = '';
+            
+            if (data.error) {
+                console.error('Error:', data.error);
+                return;
+            }
+            
+            data.tasks.forEach(task => {
+                const taskText = `${task.title} ${task.description} ${task.category} ${task.priority} ${task.dueDate}`.toLowerCase();
+                if (taskText.includes(searchTerm.toLowerCase())) {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <strong>${escapeHtml(task.title)}</strong>
+                        <p>Description: ${escapeHtml(task.description)}</p>
+                        <p>Category: ${escapeHtml(task.category)}</p>
+                        <p>Priority: ${escapeHtml(task.priority)}</p>
+                        <p>Due Date: ${escapeHtml(task.dueDate)}</p>
+                    `;
+                    tasksList.appendChild(li);
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+    function searchContacts() {
+        const searchTerm = document.querySelector('.search-bar[placeholder="Search contacts..."]').value.trim();
+        if (!searchTerm) return;
+
+        fetch('/contacts/getContactsJson', {
+            method: 'GET'
+        })
+        .then(response => response.json())
+        .then(data => {
+            const contactsList = document.getElementById('contacts-list');
+            contactsList.innerHTML = '';
+            
+            if (data.error) {
+                console.error('Error:', data.error);
+                return;
+            }
+            
+            data.contacts.forEach(contact => {
+                const contactText = `${contact.name} ${contact.emailAddress} ${contact.company} ${contact.role}`.toLowerCase();
+                if (contactText.includes(searchTerm.toLowerCase())) {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <strong>${escapeHtml(contact.name)}</strong>
+                        <p>Email: ${escapeHtml(contact.emailAddress)}</p>
+                        <p>Company: ${escapeHtml(contact.company)}</p>
+                        <p>Role: ${escapeHtml(contact.role)}</p>
+                    `;
+                    contactsList.appendChild(li);
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
     function searchApiKeys() { console.log("Searching API keys..."); }
     function searchProjectIdeas() { console.log("Searching project ideas..."); }
+
+    // Add event listeners for search inputs
+    document.addEventListener('DOMContentLoaded', function() {
+        const taskSearchInput = document.querySelector('.search-bar[placeholder="Search tasks..."]');
+        const contactSearchInput = document.querySelector('.search-bar[placeholder="Search contacts..."]');
+        const keySearchInput = document.querySelector('.search-bar[placeholder="Search API keys..."]');
+
+        taskSearchInput.addEventListener('input', debounce(searchTasks, 300));
+        contactSearchInput.addEventListener('input', debounce(searchContacts, 300));
+        keySearchInput.addEventListener('input', debounce(searchApiKeys, 300));
+    });
+
+    // Debounce function to limit API calls
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // Helper function to escape HTML
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
 
     // AI Chat Functions
     function addMessageToChat(message, isAI, containsCode = false, containsFile = false) {
@@ -679,13 +782,6 @@
         
         // Scroll to bottom
         chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    // Helper function to escape HTML
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
     }
 
     // Function to copy code

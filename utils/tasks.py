@@ -4,6 +4,7 @@ from datetime import datetime
 import pytz
 from utils.sql import * #Used for database connection and management
 import json
+import traceback
 
 tasks_blueprint = Blueprint('tasks', __name__)
 
@@ -229,3 +230,62 @@ def recover_task(task_id):
         task["additionalValues"] = json.loads(task["additionalValues"])
 
     return render_template("viewTasks.html", tasks=tasks, error="Task has been recovered successfully!", success=True)
+@tasks_blueprint.route("/search", methods=["POST"])
+def search_tasks():
+    if not session.get("name"):
+        return jsonify({"error": "Not authenticated"}), 401
+    
+    search_term = request.json.get("search_term", "").strip()
+    if not search_term:
+        return jsonify({"error": "No search term provided"}), 400
+    
+    try:
+        db = SQL("sqlite:///databases/tasks.db")
+        tasks = db.execute("""
+            SELECT * FROM tasks 
+            WHERE ownedBy = :id 
+            AND status != :status 
+            AND status != :status2
+            AND (
+                title LIKE :term 
+                OR description LIKE :term 
+                OR category LIKE :term
+            )
+        """, id=session.get("id"), status="Deleted", status2="Finished", term=f"%{search_term}%")
+        
+        for task in tasks:
+            task["additionalFields"] = json.loads(task["additionalFields"])
+            task["additionalValues"] = json.loads(task["additionalValues"])
+        
+        return jsonify({"tasks": tasks})
+    except Exception as e:
+        error_details = {
+            "error": str(e),
+            "traceback": traceback.format_exc()
+        }
+        print(f"Error in search_tasks: {error_details}")
+        return jsonify({"error": error_details}), 500
+
+@tasks_blueprint.route("/getTasksJson", methods=["GET"])
+def getTasksJson():
+    if not session.get("name"):
+        return jsonify({"error": "Not authenticated"}), 401
+    
+    try:
+        db = SQL("sqlite:///databases/tasks.db")
+        tasks = db.execute("SELECT * FROM tasks WHERE ownedBy = :id AND status != :status AND status != :status2", 
+                         id=session.get("id"), status="Deleted", status2="Finished")
+
+        for task in tasks:
+            task["additionalFields"] = json.loads(task["additionalFields"])
+            task["additionalValues"] = json.loads(task["additionalValues"])
+
+        return jsonify({"tasks": tasks})
+    except Exception as e:
+        error_details = {
+            "error": str(e),
+            "traceback": traceback.format_exc()
+        }
+        print(f"Error in getTasksJson: {error_details}")
+        return jsonify({"error": error_details}), 500
+
