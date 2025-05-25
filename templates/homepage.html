@@ -296,6 +296,190 @@
             background-color: #f9f9f9;
             color: black;
         }
+
+        /* Chat UI Styles */
+        .chat-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #36393f;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .chat-messages {
+            height: 400px;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: #2f3136;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #444;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        .user-message {
+            background-color: #7289da;
+            margin-left: auto;
+            color: white;
+        }
+
+        .ai-message {
+            background-color: #40444b;
+            margin-right: auto;
+            color: white;
+        }
+
+        .message-timestamp {
+            font-size: 12px;
+            color: #72767d;
+            margin-top: 5px;
+        }
+
+        /* Code block styling */
+        .code-block {
+            background-color: #2f3136;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 10px 0;
+            position: relative;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .code-block .copy-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: #7289da;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .code-block:hover .copy-button {
+            opacity: 1;
+        }
+
+        /* File block styling */
+        .file-block {
+            background-color: #2f3136;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 10px 0;
+            position: relative;
+        }
+
+        .file-block .file-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .file-block .file-content {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .file-block .download-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: #7289da;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .file-block:hover .download-button {
+            opacity: 1;
+        }
+
+        .light-mode .code-block,
+        .light-mode .file-block {
+            background-color: #f0f0f0;
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            background-color: #40444b;
+            color: white;
+            font-size: 16px;
+        }
+
+        .send-button {
+            background-color: #7289da;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .send-button:hover {
+            background-color: #5b6eae;
+        }
+
+        .light-mode .chat-container {
+            background-color: #f9f9f9;
+        }
+
+        .light-mode .chat-messages {
+            background-color: #ffffff;
+            border-color: #ddd;
+        }
+
+        .light-mode .user-message {
+            background-color: #7289da;
+            color: white;
+        }
+
+        .light-mode .ai-message {
+            background-color: #e5e5e5;
+            color: black;
+        }
+
+        .light-mode .message-timestamp {
+            color: #666;
+        }
+
+        .light-mode .chat-input {
+            background-color: #ffffff;
+            border-color: #ddd;
+            color: black;
+        }
     </style>
 </head>
 <body class="dark-mode">
@@ -412,8 +596,15 @@
     <!-- AI Chat -->
     <div class="section">
         <h3 class="section-title">Chat with AI</h3>
-        <div class="chat-box" id="chat-box"></div>
-        <textarea id="chat-input" class="chat-input" placeholder="Ask me anything about coding..."></textarea>
+        <div class="chat-container">
+            <div class="chat-messages" id="chatMessages">
+                <!-- Messages will be dynamically added here -->
+            </div>
+            <div class="chat-input-container">
+                <input type="text" class="chat-input" id="messageInput" placeholder="Type your message here...">
+                <button class="send-button" onclick="sendMessage()">Send</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -449,18 +640,172 @@
     function searchProjectIdeas() { console.log("Searching project ideas..."); }
 
     // AI Chat Functions
-    document.getElementById('chat-input').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            const chatBox = document.getElementById('chat-box');
-            const message = document.getElementById('chat-input').value;
-            chatBox.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
-            document.getElementById('chat-input').value = '';
+    function addMessageToChat(message, isAI, containsCode = false, containsFile = false) {
+        const chatMessages = document.querySelector('.chat-messages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${isAI ? 'ai-message' : 'user-message'}`;
+        
+        const messageContent = document.createElement('div');
+        messageContent.className = 'message-content';
 
-            // Simulating AI response
+        if (isAI && (containsCode || containsFile)) {
+            // Process code blocks
+            if (containsCode) {
+                message = message.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, language, code) => {
+                    return `<div class="code-block">
+                        <pre><code class="language-${language || 'plaintext'}">${escapeHtml(code.trim())}</code></pre>
+                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    </div>`;
+                });
+            }
+
+            // Process file blocks
+            if (containsFile) {
+                message = message.replace(/\[FILE\]([\s\S]*?)\[\/FILE\]/g, (match, content) => {
+                    const fileName = content.split('\n')[0].trim();
+                    const fileContent = content.split('\n').slice(1).join('\n').trim();
+                    return `<div class="file-block">
+                        <div class="file-name">${escapeHtml(fileName)}</div>
+                        <div class="file-content">${escapeHtml(fileContent)}</div>
+                        <button class="download-button" onclick="downloadFile(this)">Download</button>
+                    </div>`;
+                });
+            }
+        }
+
+        messageContent.innerHTML = message;
+        messageDiv.appendChild(messageContent);
+        chatMessages.appendChild(messageDiv);
+        
+        // Scroll to bottom
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Helper function to escape HTML
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // Function to copy code
+    function copyCode(button) {
+        const codeBlock = button.parentElement;
+        const code = codeBlock.querySelector('code').textContent;
+        navigator.clipboard.writeText(code).then(() => {
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
             setTimeout(() => {
-                chatBox.innerHTML += `<p><strong>AI:</strong> I'm here to help you with coding!</p>`;
-                chatBox.scrollTop = chatBox.scrollHeight; // Scroll to bottom
-            }, 1000);
+                button.textContent = originalText;
+            }, 2000);
+        });
+    }
+
+    // Function to download file
+    function downloadFile(button) {
+        const fileBlock = button.parentElement;
+        const fileName = fileBlock.querySelector('.file-name').textContent;
+        const content = fileBlock.querySelector('.file-content').textContent;
+        
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+    }
+
+    // Update the sendMessage function to handle code and file flags
+    function sendMessage() {
+        const messageInput = document.getElementById('messageInput');
+        const message = messageInput.value.trim();
+        
+        if (message) {
+            // Add user message to chat
+            addMessageToChat(message, false);
+            messageInput.value = '';
+            
+            // Show loading indicator
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'message ai-message';
+            loadingDiv.innerHTML = '<div class="message-content"><div class="typing-indicator"><span></span><span></span><span></span></div></div>';
+            document.querySelector('.chat-messages').appendChild(loadingDiv);
+            
+            // Scroll to bottom
+            const chatMessages = document.querySelector('.chat-messages');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Send message to backend
+            fetch('/send_message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Remove loading indicator
+                const loadingIndicator = document.querySelector('.typing-indicator').parentElement.parentElement;
+                loadingIndicator.remove();
+                
+                if (data.error) {
+                    console.error('Error from server:', data.error);
+                    // Add error message to chat
+                    addMessageToChat('Sorry, I encountered an error. Please try again.', true);
+                    // Show error in console for debugging
+                    console.error('Full error details:', data.error);
+                } else {
+                    // Add AI response to chat with code and file flags
+                    addMessageToChat(
+                        data.ai_response.message,
+                        true,
+                        data.ai_response.contains_code,
+                        data.ai_response.contains_file
+                    );
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Remove loading indicator
+                const loadingIndicator = document.querySelector('.typing-indicator').parentElement.parentElement;
+                loadingIndicator.remove();
+                // Add error message to chat
+                addMessageToChat('Sorry, I encountered an error. Please try again.', true);
+            });
+        }
+    }
+
+    // Update the message loading to handle code and file flags
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('/get_messages')
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error('Error loading messages:', data.error);
+                    return;
+                }
+                
+                const messages = data.messages || [];
+                // Messages are already in chronological order from the backend
+                messages.forEach(msg => {
+                    const containsCode = msg.message.includes('```');
+                    const containsFile = msg.message.includes('[FILE]');
+                    addMessageToChat(msg.message, msg.is_ai, containsCode, containsFile);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading messages:', error);
+            });
+    });
+
+    // Allow sending message with Enter key
+    document.getElementById('messageInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
         }
     });
 
