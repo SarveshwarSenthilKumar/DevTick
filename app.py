@@ -9,6 +9,7 @@ from utils.tasks import tasks_blueprint
 from utils.contacts import contacts_blueprint
 from utils.keys import keys_blueprint
 from utils.chat import chat_blueprint
+from utils.projects import projects_blueprint
 
 app = Flask(__name__)
 
@@ -26,6 +27,7 @@ if authentication:
 app.register_blueprint(tasks_blueprint, url_prefix='/tasks') # Set up tasks functionality
 app.register_blueprint(contacts_blueprint, url_prefix='/contacts') # Set up contacts functionality
 app.register_blueprint(keys_blueprint, url_prefix='/keys') # Set up keys functionality
+app.register_blueprint(projects_blueprint, url_prefix='/projects') # Set up projects functionality
 app.register_blueprint(chat_blueprint) # Set up chat functionality
 
 #This route is the base route for the website which renders the landing page, then homepage if logged in

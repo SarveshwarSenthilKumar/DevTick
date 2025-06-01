@@ -15,7 +15,7 @@ fields = [
           "title", 
           "description", 
           "category", 
-          "status", #Active, Completed, On Hold, or Archived 
+          "status", #Planning, Active, Completed, On Hold, or Archived 
           "techStack",
           "repoLink",
           "contributors",

@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Projects - DevTick</title>
+    <link rel="icon" type="image/png" href="https://i.ibb.co/KjnRR0ky/image-2025-04-02-195727739.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-color: #36393f;
+            --text-color: white;
+            --input-bg: #444;
+            --input-border: #666;
+            --field-bg: #40444b;
+            --field-input-bg: #2f3136;
+            --field-input-border: #202225;
+        }
+
+        body.light-mode {
+            --bg-color: white;
+            --text-color: #333;
+            --input-bg: #f0f0f0;
+            --input-border: #ddd;
+            --field-bg: #f0f0f0;
+            --field-input-bg: white;
+            --field-input-border: #ddd;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #2f3136;
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        header {
+            width: 100%;
+            background-color: #1f2024;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            width: 30px;
+            height: 30px;
+        }
+
+        .theme-toggle-btn, .logout-btn {
+            background-color: #7289da;
+            color: white;
+            cursor: pointer;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .theme-toggle-btn:hover, .logout-btn:hover {
+            background-color: #5b6eae;
+        }
+
+        h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #7289da;
+        }
+
+        .project-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 20px;
+        }
+
+        .project-card {
+            background-color: #36393f;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .project-title, .project-desc {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .project-desc {
+            font-size: 16px;
+            color: #ccc;
+        }
+
+        ul.project-details {
+            list-style: none;
+            padding-left: 0;
+            margin: 10px 0;
+            line-height: 1.6;
+            color: #bbb;
+        }
+
+        ul.project-details li strong {
+            color: #ccc;
+        }
+
+        .urgent {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+
+        .project-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .project-actions button {
+            flex: 1;
+            padding: 10px;
+            font-size: 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background-color: #7289da;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .project-actions button:hover {
+            background-color: #5b6eae;
+            transform: translateY(-2px);
+        }
+
+        .top-actions {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .top-actions button {
+            background-color: #7289da;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 0 5px;
+            transition: all 0.3s;
+        }
+
+        .top-actions button:hover {
+            background-color: #5b6eae;
+            transform: translateY(-2px);
+        }
+
+        .edit-mode {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #36393f;
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 10;
+            overflow-y: auto;
+        }
+
+        .edit-mode input, .edit-mode select, .edit-mode textarea {
+            background-color: #444;
+            color: white;
+            border: 1px solid #666;
+            border-radius: 5px;
+            padding: 8px;
+            margin: 5px 0;
+            width: 100%;
+        }
+
+        .edit-mode textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .edit-mode label {
+            display: block;
+            margin-top: 10px;
+            color: #ccc;
+        }
+
+        .edit-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .edit-buttons button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .edit-mode {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--bg-color);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 10;
+            overflow-y: auto;
+            color: var(--text-color);
+        }
+
+        .edit-mode input, 
+        .edit-mode select, 
+        .edit-mode textarea {
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border: 1px solid var(--input-border);
+        }
+
+        .additional-field-container {
+            background: var(--field-bg);
+        }
+
+        .additional-field-group input {
+            background: var(--field-input-bg);
+            border: 1px solid var(--field-input-border);
+            color: var(--text-color);
+        }
+
+        .save-btn {
+            background-color: #43b581;
+            color: white;
+        }
+
+        .save-btn:hover {
+            background-color: #3aa371;
+            transform: translateY(-2px);
+        }
+
+        .cancel-btn {
+            background-color: #f04747;
+            color: white;
+        }
+
+        .cancel-btn:hover {
+            background-color: #d83c3c;
+            transform: translateY(-2px);
+        }
+
+        .additional-field-container {
+            margin-top: 15px;
+            padding: 15px;
+            background: #40444b;
+            border-radius: 8px;
+        }
+
+        .additional-field-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .additional-field-group input {
+            flex: 1;
+            padding: 8px;
+            background: #2f3136;
+            border: 1px solid #202225;
+            border-radius: 4px;
+            color: white;
+        }
+
+        .add-field-btn,
+        .remove-field-btn {
+            padding: 8px 12px;
+            background: #7289da;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .add-field-btn:hover,
+        .remove-field-btn:hover {
+            background: #677bc4;
+        }
+        .error-message {
+            background-color: #f04747;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .close-error {
+            cursor: pointer;
+            font-size: 20px;
+            margin-left: 10px;
+        }
+
+        .close-error:hover {
+            color: #ddd;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Light Mode Styles */
+        body.light-mode {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        body.light-mode header {
+            background-color: #fff;
+            color: #333;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        body.light-mode .project-card {
+            background-color: #fff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        body.light-mode .project-title,
+        body.light-mode .project-desc {
+            color: #333;
+        }
+
+        body.light-mode .project-desc {
+            color: #666;
+        }
+
+        body.light-mode ul.project-details {
+            color: #666;
+        }
+
+        body.light-mode ul.project-details li strong {
+            color: #555;
+        }
+
+        body.light-mode .edit-mode input,
+        body.light-mode .edit-mode select,
+        body.light-mode .edit-mode textarea {
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        body.light-mode .additional-field-container {
+            background: #f0f0f0;
+        }
+
+        body.light-mode .additional-field-group input {
+            background: #fff;
+            border: 1px solid #ddd;
+            color: #333;
+        }
+
+        body.light-mode .error-message {
+            color: #fff;
+        }
+        .edit-buttons button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .save-btn {
+            background-color: #43b581;
+        }
+
+        .save-btn:hover {
+            background-color: #3aa371;
+            transform: translateY(-2px);
+        }
+
+        .cancel-btn {
+            background-color: #f04747;
+        }
+
+        .cancel-btn:hover {
+            background-color: #d83c3c;
+            transform: translateY(-2px);
+        }
+
+        .search-container {
+            display: flex;
+            margin: 0 auto 20px;
+            max-width: 600px;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .search-container input {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: none;
+            background-color: #40444b;
+            color: white;
+            font-size: 16px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            min-width: 0;
+        }
+
+        .search-container input:focus {
+            outline: none;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            background-color: #484c54;
+        }
+
+        .search-container button {
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: none;
+            background-color: #7289da;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .search-container button:hover {
+            background-color: #5b6eae;
+        }
+
+        /* Light mode styles */
+        body.light-mode .search-container input {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        body.light-mode .search-container input:focus {
+            background-color: #e0e0e0;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .search-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .search-container button {
+                width: 100%;
+            }
+            
+            .top-actions {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .top-actions button {
+                width: 100%;
+                margin: 0;
+            }
+            
+            .project-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .logo {
+                justify-content: center;
+            }
+            
+            .theme-toggle-btn, .logout-btn {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+
+        /* Loading indicator */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #7289da;
+            font-size: 18px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #7289da;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* No results message */
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #bbb;
+            font-size: 18px;
+            grid-column: 1 / -1;
+        }
+
+        /* AI Enhance button */
+        .ai-enhance-btn {
+            background-color: #9147ff !important;
+        }
+
+        .ai-enhance-btn:hover {
+            background-color: #772ce8 !important;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <img src="https://i.ibb.co/KjnRR0ky/image-2025-04-02-195727739.png" alt="DevTick Logo">
+        <span class="DevTickHeader">DevTick</span>
+    </div>
+    <div>
+        <button class="theme-toggle-btn" onclick="toggleTheme()">☀️</button>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+</header>
+
+{% if error %}
+    {% if success %}
+    <div class="error-message" style="background-color: #43b581;">
+        {{ error }}
+        <span class="close-error" onclick="this.parentElement.style.display='none'">×</span>
+    </div>
+    {% else %}
+    <div class="error-message">
+        {{ error }}
+        <span class="close-error" onclick="this.parentElement.style.display='none'">×</span>
+    </div>
+    {% endif %}
+{% endif %}
+
+<h2>Your Projects</h2>
+
+<div class="search-container">
+    <input type="text" id="search-input" placeholder="Search projects..." required>
+    <button type="button" id="search-btn">Search</button>
+    <button type="button" id="clear-search-btn">Clear</button>
+</div>
+
+<div class="top-actions">
+    {% if not archived %}
+    <button onclick="window.location.href='/projects/checkarchived'">🗄️ Check Archived Projects</button>
+    {% else %}
+    <button onclick="window.location.href='/projects/getProjects'">Check Active Projects</button>
+    {% endif %}
+    <button onclick="window.location.href='/projects/createproject'">+ New Project</button>
+    <button onclick="window.location.href='/'">🏠 Home</button>
+</div>
+
+<div class="loading">
+    <div class="spinner"></div>
+    <p>Searching projects...</p>
+</div>
+
+<div class="project-container" id="project-container">
+    {% for project in projects %}
+    <div class="project-card" id="project-card-{{ project.id }}">
+        <div class="project-title" id="project-title-{{ project.id }}">{{ project.title }}</div>
+        <div class="project-desc" id="project-desc-{{ project.id }}">{{ project.description }}</div>
+
+        <ul class="project-details">
+            <li><strong>Status:</strong> <span>{{ project.status }}</span></li>
+            <li><strong>Category:</strong> <span>{{ project.category }}</span></li>
+            <li><strong>Tech Stack:</strong> <span>{{ project.techStack }}</span></li>
+            <li><strong>Repository:</strong> <a href="{{ project.repoLink }}" target="_blank">{{ project.repoLink }}</a></li>
+            <li><strong>Contributors:</strong> <span>{{ project.contributors }}</span></li>
+            <li><strong>Your Role:</strong> <span>{{ project.role }}</span></li>
+            <li><strong>Notes:</strong> <span>{{ project.notes }}</span></li>
+            <li><strong>Future Plans:</strong> <span>{{ project.futurePlans }}</span></li>
+
+            {% for i in range(project.additionalFields|length) %}
+                {% if project.additionalFields[i] or project.additionalValues[i] %}
+                <li>
+                    <strong>{{ project.additionalFields[i] or "Field" }}:</strong>
+                    <span>{{ project.additionalValues[i] or "" }}</span>
+                </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+
+        <div class="project-actions">
+            {% if not archived %}
+                <button onclick="editProject({{ project.id }})" class="action-btn">Edit</button>
+
+                <form method="POST" action="/projects/deleteproject/{{ project.id }}" class="inline-form">
+                    <button type="submit" class="action-btn delete-btn">Delete</button>
+                </form>
+
+                <button onclick="enhanceWithAI({{ project.id }})" class="action-btn ai-enhance-btn">✨ Enhance with AI</button>
+
+                {% if project.status != 'Archived' %}
+                <form method="POST" action="/projects/archiveproject/{{ project.id }}" class="inline-form">
+                    <button type="submit" class="action-btn archive-btn">Archive</button>
+                </form>
+                {% endif %}
+            {% else %}
+                <form method="POST" action="/projects/recoverproject/{{ project.id }}" class="inline-form">
+                    <button type="submit" class="action-btn recover-btn">Restore</button>
+                </form>
+            {% endif %}
+        </div>
+
+        <div class="edit-mode" id="edit-mode-{{ project.id }}">
+            <form method="POST" action="/projects/editproject/{{ project.id }}" id="edit-form-{{ project.id }}">
+                <label for="title-{{ project.id }}">Title:</label>
+                <input type="text" id="title-{{ project.id }}" name="title" value="{{ project.title }}" required>
+
+                <label for="description-{{ project.id }}">Description:</label>
+                <textarea id="description-{{ project.id }}" name="description">{{ project.description }}</textarea>
+
+                <label for="category-{{ project.id }}">Category:</label>
+                <input type="text" id="category-{{ project.id }}" name="category" value="{{ project.category }}">
+
+                <label for="status-{{ project.id }}">Status:</label>
+                <select id="status-{{ project.id }}" name="status">
+                    <option value="Planning" {% if project.status == 'Planning' %}selected{% endif %}>Planning</option>
+                    <option value="Active" {% if project.status == 'Active' %}selected{% endif %}>Active</option>
+                    <option value="Completed" {% if project.status == 'Completed' %}selected{% endif %}>Completed</option>
+                    <option value="On Hold" {% if project.status == 'On Hold' %}selected{% endif %}>On Hold</option>
+                    <option value="Archived" {% if project.status == 'Archived' %}selected{% endif %}>Archived</option>
+                </select>
+
+                <label for="techStack-{{ project.id }}">Tech Stack:</label>
+                <input type="text" id="techStack-{{ project.id }}" name="techStack" value="{{ project.techStack }}">
+
+                <label for="repoLink-{{ project.id }}">Repository Link:</label>
+                <input type="url" id="repoLink-{{ project.id }}" name="repoLink" value="{{ project.repoLink }}">
+
+                <label for="contributors-{{ project.id }}">Contributors:</label>
+                <input type="text" id="contributors-{{ project.id }}" name="contributors" value="{{ project.contributors }}">
+
+                <label for="role-{{ project.id }}">Your Role:</label>
+                <input type="text" id="role-{{ project.id }}" name="role" value="{{ project.role }}">
+
+                <label for="notes-{{ project.id }}">Notes:</label>
+                <textarea id="notes-{{ project.id }}" name="notes">{{ project.notes }}</textarea>
+
+                <label for="futurePlans-{{ project.id }}">Future Plans:</label>
+                <textarea id="futurePlans-{{ project.id }}" name="futurePlans">{{ project.futurePlans }}</textarea>
+
+                <div class="additional-field-container">
+                    <h4>Additional Fields:</h4>
+                    {% for i in range(project.additionalFields|length) %}
+                    <div class="additional-field-group">
+                        <input type="text" name="additionalFields[]" value="{{ project.additionalFields[i] }}" placeholder="Field name">
+                        <input type="text" name="additionalValues[]" value="{{ project.additionalValues[i] }}" placeholder="Field value">
+                        <button type="button" class="remove-field-btn" onclick="removeAdditionalField(this)">Remove</button>
+                    </div>
+                    {% endfor %}
+                    <button type="button" class="add-field-btn" onclick="addAdditionalField(this)">+ Add Field</button>
+                </div>
+
+                <div class="edit-buttons">
+                    <button type="submit" class="save-btn">💾 Save</button>
+                    <button type="button" class="cancel-btn" onclick="cancelEdit({{ project.id }})">✖ Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    // Store all projects initially
+    let allProjects = [];
+
+    // Get all projects when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        // Extract projects from the HTML (they're already rendered server-side)
+        const projectCards = document.querySelectorAll('.project-card');
+        allProjects = Array.from(projectCards).map(card => {
+            return {
+                element: card,
+                title: card.querySelector('.project-title').textContent.toLowerCase(),
+                description: card.querySelector('.project-desc').textContent.toLowerCase(),
+                details: card.querySelector('.project-details').textContent.toLowerCase()
+            };
+        });
+        
+        // Add event listener for Enter key in search input
+        document.getElementById('search-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+        
+        // Add click event for search button
+        document.getElementById('search-btn').addEventListener('click', performSearch);
+        
+        // Add click event for clear button
+        document.getElementById('clear-search-btn').addEventListener('click', clearSearch);
+    });
+
+    function performSearch() {
+        const query = document.getElementById('search-input').value.trim().toLowerCase();
+        
+        if (query.length === 0) {
+            clearSearch();
+            return;
+        }
+        
+        showLoading(true);
+        
+        // Hide all projects first
+        allProjects.forEach(project => {
+            project.element.style.display = 'none';
+        });
+        
+        // Filter projects that match the search query
+        const matchingProjects = allProjects.filter(project => {
+            return project.title.includes(query) || 
+                   project.description.includes(query) || 
+                   project.details.includes(query);
+        });
+        
+        // Show matching projects
+        matchingProjects.forEach(project => {
+            project.element.style.display = 'block';
+        });
+        
+        // Show no results message if no matches
+        const projectContainer = document.getElementById('project-container');
+        if (matchingProjects.length === 0) {
+            // Remove any existing no-results message
+            const existingNoResults = document.querySelector('.no-results');
+            if (existingNoResults) {
+                existingNoResults.remove();
+            }
+            
+            const noResults = document.createElement('div');
+            noResults.className = 'no-results';
+            noResults.textContent = 'No projects found matching your search.';
+            projectContainer.appendChild(noResults);
+        } else {
+            // Remove any existing no-results message
+            const existingNoResults = document.querySelector('.no-results');
+            if (existingNoResults) {
+                existingNoResults.remove();
+            }
+        }
+        
+        showLoading(false);
+    }
+
+    function clearSearch() {
+        document.getElementById('search-input').value = '';
+        
+        // Show all projects
+        allProjects.forEach(project => {
+            project.element.style.display = 'block';
+        });
+        
+        // Remove any no-results message
+        const existingNoResults = document.querySelector('.no-results');
+        if (existingNoResults) {
+            existingNoResults.remove();
+        }
+    }
+
+    function showLoading(show) {
+        const loadingIndicator = document.querySelector('.loading');
+        if (show) {
+            loadingIndicator.style.display = 'block';
+        } else {
+            loadingIndicator.style.display = 'none';
+        }
+    }
+
+    function editProject(projectId) {
+        // Highlight the card being edited
+        document.getElementById(`project-card-${projectId}`).classList.add('editing');
+        
+        // Hide all project details
+        const elementsToHide = [
+            `project-title-${projectId}`,
+            `project-desc-${projectId}`,
+            `project-status-${projectId}`,
+            `project-category-${projectId}`,
+            `project-techStack-${projectId}`,
+            `project-repoLink-${projectId}`,
+            `project-contributors-${projectId}`,
+            `project-role-${projectId}`,
+            `project-notes-${projectId}`,
+            `project-futurePlans-${projectId}`
+        ];
+        
+        elementsToHide.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'none';
+        });
+        
+        // Hide the action buttons
+        document.querySelector(`#project-card-${projectId} .project-actions`).style.display = 'none';
+        
+        // Show the edit form
+        document.getElementById(`edit-mode-${projectId}`).style.display = 'block';
+        
+        // Scroll to the project card if it's not fully visible
+        document.getElementById(`project-card-${projectId}`).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function cancelEdit(projectId) {
+        // Remove editing highlight
+        document.getElementById(`project-card-${projectId}`).classList.remove('editing');
+        
+        // Show all project details
+        const elementsToShow = [
+            `project-title-${projectId}`,
+            `project-desc-${projectId}`,
+            `project-status-${projectId}`,
+            `project-category-${projectId}`,
+            `project-techStack-${projectId}`,
+            `project-repoLink-${projectId}`,
+            `project-contributors-${projectId}`,
+            `project-role-${projectId}`,
+            `project-notes-${projectId}`,
+            `project-futurePlans-${projectId}`
+        ];
+        
+        elementsToShow.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'block';
+        });
+        
+        // Show the action buttons
+        document.querySelector(`#project-card-${projectId} .project-actions`).style.display = 'flex';
+        
+        // Hide the edit form
+        document.getElementById(`edit-mode-${projectId}`).style.display = 'none';
+    }
+
+    function enhanceWithAI(projectId) {
+        if (confirm("This will send your project details to an AI for enhancement suggestions. Continue?")) {
+            // Get project data
+            const title = document.getElementById(`project-title-${projectId}`).textContent;
+            const description = document.getElementById(`project-desc-${projectId}`).textContent;
+            
+            // Collect all details
+            const details = [];
+            const detailElements = document.querySelectorAll(`#project-card-${projectId} .project-details li`);
+            detailElements.forEach(el => {
+                details.push(el.textContent.trim());
+            });
+            
+            // Show loading state
+            const originalText = document.querySelector(`#project-card-${projectId} .ai-enhance-btn`).textContent;
+            document.querySelector(`#project-card-${projectId} .ai-enhance-btn`).textContent = "Processing...";
+            document.querySelector(`#project-card-${projectId} .ai-enhance-btn`).disabled = true;
+            
+            // Simulate AI processing (in a real app, this would be an API call)
+            setTimeout(() => {
+                // Here you would normally make an API call to your backend
+                // which would then call an AI service
+                
+                // For demo purposes, we'll just show an alert
+                alert(`AI enhancement suggestions for "${title}":\n\n1. Consider adding automated testing\n2. Update documentation\n3. Refactor the code structure\n\nThese are just placeholder suggestions. In a real app, this would call an AI API.`);
+                
+                // Restore button state
+                document.querySelector(`#project-card-${projectId} .ai-enhance-btn`).textContent = originalText;
+                document.querySelector(`#project-card-${projectId} .ai-enhance-btn`).disabled = false;
+            }, 1500);
+        }
+    }
+
+    function toggleTheme() {
+        const body = document.body;
+        const isDarkMode = body.classList.contains('dark-mode');
+        
+        if (isDarkMode) {
+            body.classList.remove('dark-mode');
+            body.classList.add('light-mode');
+            localStorage.setItem('theme', 'light');
+            document.querySelector('.theme-toggle-btn').textContent = '🌙';
+        } else {
+            body.classList.remove('light-mode');
+            body.classList.add('dark-mode');
+            localStorage.setItem('theme', 'dark');
+            document.querySelector('.theme-toggle-btn').textContent = '☀️';
+        }
+        
+        // Force redraw of any open edit modes
+        document.querySelectorAll('.edit-mode').forEach(editMode => {
+            editMode.style.display = 'none';
+            setTimeout(() => {
+                if (editMode.parentElement.classList.contains('editing')) {
+                    editMode.style.display = 'block';
+                }
+            }, 10);
+        });
+    }
+
+    // Check for saved theme preference on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        const body = document.body;
+        
+        if (savedTheme === 'light') {
+            body.classList.add('light-mode');
+            document.querySelector('.theme-toggle-btn').textContent = '🌙';
+        } else {
+            body.classList.add('dark-mode');
+            document.querySelector('.theme-toggle-btn').textContent = '☀️';
+        }
+    });
+
+    function logout() {
+        if (confirm("You are about to log out of DevTick!")) {
+            window.location.href = "/auth/logout";
+        }
+    }
+
+    // Function to add new additional field with validation
+    function addAdditionalField(button) {
+        const container = button.parentNode;
+        const existingFields = container.querySelectorAll('.additional-field-group');
+        
+        // Check if last field is empty
+        if (existingFields.length > 0) {
+            const lastField = existingFields[existingFields.length - 1];
+            const nameInput = lastField.querySelector('input[name="additionalFields[]"]');
+            const valueInput = lastField.querySelector('input[name="additionalValues[]"]');
+            
+            if (nameInput.value.trim() === '' || valueInput.value.trim() === '') {
+                alert('Please fill in both field name and value before adding a new one');
+                return;
+            }
+        }
+        
+        const fieldGroup = document.createElement('div');
+        fieldGroup.className = 'additional-field-group';
+        fieldGroup.innerHTML = `
+            <input type="text" name="additionalFields[]" placeholder="Field name" required>
+            <input type="text" name="additionalValues[]" placeholder="Field value" required>
+            <button type="button" class="remove-field-btn" onclick="removeAdditionalField(this)">Remove</button>
+        `;
+        container.insertBefore(fieldGroup, button);
+    }
+
+    // Function to remove additional field
+    function removeAdditionalField(button) {
+        const container = button.closest('.additional-field-container');
+        const fieldGroups = container.querySelectorAll('.additional-field-group');
+        
+        // Don't allow removing if it's the only field
+        if (fieldGroups.length <= 1) {
+            alert('You need at least one additional field');
+            return;
+        }
+        
+        button.parentNode.remove();
+    }
+
+    // Prevent form submission if any additional field is incomplete
+    document.querySelectorAll('[id^="edit-form-"]').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const container = this.querySelector('.additional-field-container');
+            if (container) {
+                const fields = container.querySelectorAll('.additional-field-group');
+                
+                for (let field of fields) {
+                    const nameInput = field.querySelector('input[name="additionalFields[]"]');
+                    const valueInput = field.querySelector('input[name="additionalValues[]"]');
+                    
+                    // Check if one is filled but not the other
+                    if ((nameInput.value.trim() === '' && valueInput.value.trim() !== '') || 
+                        (nameInput.value.trim() !== '' && valueInput.value.trim() === '')) {
+                        alert('Please fill in both field name and value for all additional fields');
+                        e.preventDefault();
+                        return;
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
