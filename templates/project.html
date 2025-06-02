@@ -357,14 +357,103 @@
             
             // Generate a random tech stack suggestion
             window.generateTechStack = function() {
-                const frontend = ['React', 'Vue', 'Angular', 'Svelte'];
-                const backend = ['Node.js', 'Django', 'Spring', 'Laravel'];
-                const database = ['MongoDB', 'PostgreSQL', 'MySQL', 'Firebase'];
+                // Weighted tech stacks that work well together
+                const weightedStacks = [
+                    // JavaScript Full Stack
+                    { frontend: 'React', backend: 'Node.js', database: 'MongoDB', weight: 8 },
+                    { frontend: 'React', backend: 'Express', database: 'PostgreSQL', weight: 7 },
+                    { frontend: 'Next.js', backend: 'Node.js', database: 'MongoDB', weight: 9 },
+                    { frontend: 'Next.js', backend: 'Express', database: 'PostgreSQL', weight: 8 },
+                    
+                    // Python Full Stack
+                    { frontend: 'Vue', backend: 'Django', database: 'PostgreSQL', weight: 8 },
+                    { frontend: 'React', backend: 'Django', database: 'PostgreSQL', weight: 7 },
+                    { frontend: 'Svelte', backend: 'Flask', database: 'PostgreSQL', weight: 7 },
+                    
+                    // Java Full Stack
+                    { frontend: 'Angular', backend: 'Spring', database: 'MySQL', weight: 8 },
+                    { frontend: 'React', backend: 'Spring', database: 'PostgreSQL', weight: 7 },
+                    
+                    // PHP Full Stack
+                    { frontend: 'Vue', backend: 'Laravel', database: 'MySQL', weight: 7 },
+                    { frontend: 'React', backend: 'Laravel', database: 'MySQL', weight: 6 },
+                    
+                    // Modern Stacks
+                    { frontend: 'Svelte', backend: 'Node.js', database: 'Supabase', weight: 8 },
+                    { frontend: 'Solid.js', backend: 'Express', database: 'Firebase', weight: 7 },
+                    { frontend: 'Astro', backend: 'Deno', database: 'SQLite', weight: 6 },
+                    
+                    // Enterprise Stacks
+                    { frontend: 'Angular', backend: '.NET', database: 'SQL Server', weight: 8 },
+                    { frontend: 'Blazor', backend: '.NET', database: 'Azure CosmosDB', weight: 9 },
+                    
+                    // Serverless/Jamstack
+                    { frontend: 'Next.js', backend: 'Serverless', database: 'FaunaDB', weight: 8 },
+                    { frontend: 'Gatsby', backend: 'AWS Lambda', database: 'DynamoDB', weight: 7 },
+                    
+                    // Mobile-focused
+                    { frontend: 'React Native', backend: 'Node.js', database: 'MongoDB', weight: 8 },
+                    { frontend: 'Flutter', backend: 'Firebase', database: 'Firestore', weight: 9 },
+                    
+                    // Emerging Tech
+                    { frontend: 'Qwik', backend: 'Bun', database: 'Neon', weight: 6 },
+                    { frontend: 'HTMX', backend: 'Go', database: 'PostgreSQL', weight: 7 },
+                ];
+
+                // Additional random options (will be lower weight by default)
+                const allFrontends = [
+                    'React', 'Vue', 'Angular', 'Svelte', 'Solid.js', 'Qwik', 'HTMX', 
+                    'Ember.js', 'Alpine.js', 'Lit', 'Stencil', 'Mithril', 'Preact',
+                    'Marko', 'Riot.js', 'Aurelia', 'Polymer', 'Backbone.js', 'Knockout',
+                    'Next.js', 'Nuxt.js', 'Gatsby', 'Remix', 'Astro', 'Eleventy',
+                    'SvelteKit', 'Blazor', 'Flutter Web', 'React Native Web', 'Vanilla JS'
+                ];
+                
+                const allBackends = [
+                    'Node.js', 'Express', 'NestJS', 'Deno', 'Bun', 'Django', 'Flask',
+                    'FastAPI', 'Spring', 'Micronaut', 'Quarkus', 'Laravel', 'Symfony',
+                    'Ruby on Rails', 'Phoenix', 'ASP.NET', 'Go', 'Gin', 'Echo',
+                    'Rust', 'Actix', 'Rocket', 'Python', 'Fastify', 'Koa', 'Hapi',
+                    'Serverless', 'AWS Lambda', 'Cloudflare Workers', 'Firebase Functions'
+                ];
+                
+                const allDatabases = [
+                    'MongoDB', 'PostgreSQL', 'MySQL', 'Firebase', 'Firestore', 'Supabase',
+                    'SQLite', 'SQL Server', 'Oracle', 'MariaDB', 'CockroachDB', 'Neon',
+                    'DynamoDB', 'Cassandra', 'CouchDB', 'Redis', 'Elasticsearch', 'FaunaDB',
+                    'CosmosDB', 'InfluxDB', 'ArangoDB', 'Realm', 'Prisma', 'PlanetScale',
+                    'TimescaleDB', 'ScyllaDB', 'RethinkDB', 'Memcached', 'HBase', 'BigQuery'
+                ];
+
+                // Create weighted array
+                const weightedArray = [];
+                weightedStacks.forEach(stack => {
+                    for (let i = 0; i < stack.weight; i++) {
+                        weightedArray.push(stack);
+                    }
+                });
+
+                // 80% chance of getting a weighted (good) stack, 20% random
+                let selectedStack;
+                if (Math.random() < 0.8 && weightedArray.length > 0) {
+                    // Select from weighted stacks
+                    selectedStack = weightedArray[Math.floor(Math.random() * weightedArray.length)];
+                } else {
+                    // Select completely random stack
+                    selectedStack = {
+                        frontend: allFrontends[Math.floor(Math.random() * allFrontends.length)],
+                        backend: allBackends[Math.floor(Math.random() * allBackends.length)],
+                        database: allDatabases[Math.floor(Math.random() * allDatabases.length)]
+                    };
+                }
+
+                // Format the output
                 const randomStack = [
-                    frontend[Math.floor(Math.random() * frontend.length)],
-                    backend[Math.floor(Math.random() * backend.length)],
-                    database[Math.floor(Math.random() * database.length)]
+                    selectedStack.frontend,
+                    selectedStack.backend,
+                    selectedStack.database
                 ].join(', ');
+                
                 document.getElementById('techStack').value = randomStack;
             };
         });
