@@ -377,4 +377,48 @@ def search_projects():
         print(f"Error in search_keys: {error_details}")
         return jsonify({"error": error_details}), 500
     
-#Create Edit Key
+@projects_blueprint.route("/editproject/<int:project_id>", methods=["POST"])
+def edit_project(project_id):
+    if not session.get("name"):
+        return redirect("/")
+    
+    db = SQL("sqlite:///databases/projects.db")
+    
+    project = db.execute("SELECT id FROM projects WHERE id = :id AND ownedBy = :owner", 
+                     id=project_id, owner=session.get("id"))
+    if not project:
+        db = SQL("sqlite:///databases/projects.db")
+        projects = db.execute("SELECT * FROM projects WHERE ownedBy = :id", id=session.get("id"))
+
+        for project in projects: 
+            project["additionalFields"] = json.loads(project["additionalFields"])
+            project["additionalValues"] = json.loads(project["additionalValues"])
+
+        return render_template("viewKeys.html", projects=projects, error="Task cannot be found!")
+    
+    additional_fields = request.form.getlist('additionalFields[]')
+    additional_values = request.form.getlist('additionalValues[]')
+
+    title = request.form.get("title")
+    description = request.form.get("description")
+    category = request.form.get("category")
+    status = request.form.get("status")
+    techStack = request.form.get("techStack")
+    repoLink = request.form.get("repoLink")
+    contributors = request.form.get("contributors")
+    role = request.form.get("role")
+    startDate = request.form.get("startDate")
+    endDate = request.form.get("endDate")
+    notes = request.form.get("notes")
+    futurePlans = request.form.get("futurePlans")
+    
+    db.execute("UPDATE projects SET title = :title, description = :description, category = :category, status = :status, techStack = :techStack, repoLink = :repoLink, contributors = :contributors, role = :role, startDate = :startDate, endDate = :endDate, notes = :notes, futurePlans = :futurePlans, additionalFields = :additionalFields, additionalValues = :additionalValues WHERE id = :id AND ownedBy = :owner", title=title, description=description, category=category, status=status, techStack=techStack, repoLink=repoLink, contributors=contributors, role=role, startDate=startDate, endDate=endDate, notes=notes, futurePlans=futurePlans, additionalFields=json.dumps(additional_fields), additionalValues=json.dumps(additional_values), id=project_id, owner=session.get("id"))
+    
+    db = SQL("sqlite:///databases/projects.db")
+    projects = db.execute("SELECT * FROM projects WHERE ownedBy = :id AND isActive != :status", id=session.get("id"), status="Deleted")
+
+    for project in projects:
+        project["additionalFields"] = json.loads(project["additionalFields"])
+        project["additionalValues"] = json.loads(project["additionalValues"])
+
+    return render_template("viewProjects.html", projects=projects)
