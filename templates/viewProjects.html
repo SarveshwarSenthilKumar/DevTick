@@ -564,6 +564,168 @@
         .ai-enhance-btn:hover {
             background-color: #772ce8 !important;
         }
+
+        /* Add these styles to the existing <style> section */
+        .ai-suggestions-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .ai-suggestions-content {
+            background-color: #36393f;
+            margin: 50px auto;
+            padding: 20px;
+            width: 90%;
+            max-width: 800px;
+            border-radius: 10px;
+            position: relative;
+            color: white;
+        }
+
+        .ai-suggestions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #444;
+        }
+
+        .ai-suggestions-header h2 {
+            margin: 0;
+            color: #7289da;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .suggestion-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #2f3136;
+            border-radius: 8px;
+        }
+
+        .suggestion-section h3 {
+            color: #7289da;
+            margin-bottom: 10px;
+        }
+
+        .suggestion-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .suggestion-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #444;
+        }
+
+        .suggestion-list li:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .suggestion-actions button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .accept-all-btn {
+            background-color: #43b581;
+            color: white;
+        }
+
+        .accept-all-btn:hover {
+            background-color: #3ca374;
+        }
+
+        .close-suggestions-btn {
+            background-color: #f04747;
+            color: white;
+        }
+
+        .close-suggestions-btn:hover {
+            background-color: #d83c3e;
+        }
+
+        .suggestion-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+        }
+
+        .suggestion-text {
+            flex: 1;
+        }
+
+        .suggestion-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .accept-btn {
+            background-color: #43b581;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .reject-btn {
+            background-color: #f04747;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading-spinner::after {
+            content: '';
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #7289da;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -716,6 +878,42 @@
         </div>
     </div>
     {% endfor %}
+</div>
+
+<div id="ai-suggestions-modal" class="ai-suggestions-modal">
+    <div class="ai-suggestions-content">
+        <div class="ai-suggestions-header">
+            <h2>AI Enhancement Suggestions</h2>
+            <button class="close-modal" onclick="closeSuggestionsModal()">&times;</button>
+        </div>
+        <div id="loading-spinner" class="loading-spinner"></div>
+        <div id="suggestions-content" style="display: none;">
+            <div class="suggestion-section">
+                <h3>Technical Improvements</h3>
+                <ul id="technical-improvements" class="suggestion-list"></ul>
+            </div>
+            <div class="suggestion-section">
+                <h3>Best Practices</h3>
+                <ul id="best-practices" class="suggestion-list"></ul>
+            </div>
+            <div class="suggestion-section">
+                <h3>New Features</h3>
+                <ul id="new-features" class="suggestion-list"></ul>
+            </div>
+            <div class="suggestion-section">
+                <h3>Documentation</h3>
+                <ul id="documentation" class="suggestion-list"></ul>
+            </div>
+            <div class="suggestion-section">
+                <h3>Testing Strategies</h3>
+                <ul id="testing" class="suggestion-list"></ul>
+            </div>
+            <div class="suggestion-actions">
+                <button class="accept-all-btn" onclick="acceptAllSuggestions()">Accept All</button>
+                <button class="close-suggestions-btn" onclick="closeSuggestionsModal()">Close</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -887,36 +1085,155 @@
         document.getElementById(`edit-mode-${projectId}`).style.display = 'none';
     }
 
+    let currentProjectId = null;
+    let currentSuggestions = null;
+
     function enhanceWithAI(projectId) {
         if (confirm("This will send your project details to an AI for enhancement suggestions. Continue?")) {
-            // Get project data
-            const title = document.getElementById(`project-title-${projectId}`).textContent;
-            const description = document.getElementById(`project-desc-${projectId}`).textContent;
+            currentProjectId = projectId;
+            showSuggestionsModal();
+            showLoading(true);
             
-            // Collect all details
-            const details = [];
-            const detailElements = document.querySelectorAll(`#project-card-${projectId} .project-details li`);
-            detailElements.forEach(el => {
-                details.push(el.textContent.trim());
+            // Make API call to get AI suggestions
+            fetch(`/projects/enhance_project/${projectId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                showLoading(false);
+                if (data.error) {
+                    alert('Error getting AI suggestions: ' + data.error);
+                    closeSuggestionsModal();
+                    return;
+                }
+                currentSuggestions = data.suggestions;
+                displaySuggestions(data.suggestions);
+            })
+            .catch(error => {
+                showLoading(false);
+                alert('Error getting AI suggestions: ' + error);
+                closeSuggestionsModal();
             });
+        }
+    }
+
+    function showSuggestionsModal() {
+        document.getElementById('ai-suggestions-modal').style.display = 'block';
+    }
+
+    function closeSuggestionsModal() {
+        document.getElementById('ai-suggestions-modal').style.display = 'none';
+        currentProjectId = null;
+        currentSuggestions = null;
+    }
+
+    function showLoading(show) {
+        document.getElementById('loading-spinner').style.display = show ? 'block' : 'none';
+        document.getElementById('suggestions-content').style.display = show ? 'none' : 'block';
+    }
+
+    function displaySuggestions(suggestions) {
+        // Clear previous suggestions
+        const sections = ['technical-improvements', 'best-practices', 'new-features', 'documentation', 'testing'];
+        sections.forEach(section => {
+            document.getElementById(section).innerHTML = '';
+        });
+
+        // Add new suggestions
+        Object.entries(suggestions).forEach(([key, items]) => {
+            const sectionId = key.replace(/_/g, '-');
+            const section = document.getElementById(sectionId);
             
-            // Show loading state
-            const originalText = document.querySelector(`#project-card-${projectId} .ai-enhance-btn`).textContent;
-            document.querySelector(`#project-card-${projectId} .ai-enhance-btn`).textContent = "Processing...";
-            document.querySelector(`#project-card-${projectId} .ai-enhance-btn`).disabled = true;
-            
-            // Simulate AI processing (in a real app, this would be an API call)
-            setTimeout(() => {
-                // Here you would normally make an API call to your backend
-                // which would then call an AI service
-                
-                // For demo purposes, we'll just show an alert
-                alert(`AI enhancement suggestions for "${title}":\n\n1. Consider adding automated testing\n2. Update documentation\n3. Refactor the code structure\n\nThese are just placeholder suggestions. In a real app, this would call an AI API.`);
-                
-                // Restore button state
-                document.querySelector(`#project-card-${projectId} .ai-enhance-btn`).textContent = originalText;
-                document.querySelector(`#project-card-${projectId} .ai-enhance-btn`).disabled = false;
-            }, 1500);
+            items.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'suggestion-item';
+                li.setAttribute('data-category', key);
+                li.setAttribute('data-suggestion', item);
+                li.innerHTML = `
+                    <span class="suggestion-text">${item}</span>
+                    <div class="suggestion-buttons">
+                        <button class="accept-btn" onclick="acceptSuggestion('${key}', '${item.replace(/'/g, "\\'")}')">Accept</button>
+                        <button class="reject-btn" onclick="rejectSuggestion(this)">Reject</button>
+                    </div>
+                `;
+                section.appendChild(li);
+            });
+        });
+    }
+
+    function acceptSuggestion(category, suggestion) {
+        // Make API call to apply the suggestion
+        fetch(`/projects/apply_suggestion/${currentProjectId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                category: category,
+                suggestion: suggestion
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert('Error applying suggestion: ' + data.error);
+                return;
+            }
+            // Remove the suggestion from the list
+            const suggestionItem = document.querySelector(`[data-category="${category}"][data-suggestion="${suggestion}"]`);
+            if (suggestionItem) {
+                suggestionItem.remove();
+            }
+            // Show success message
+            alert('Suggestion applied successfully!');
+        })
+        .catch(error => {
+            alert('Error applying suggestion: ' + error);
+        });
+    }
+
+    function rejectSuggestion(button) {
+        button.closest('.suggestion-item').remove();
+    }
+
+    function acceptAllSuggestions() {
+        if (confirm('Are you sure you want to accept all suggestions? This will add them to your project notes and future plans.')) {
+            // Make API call to apply all suggestions
+            fetch(`/projects/apply_all_suggestions/${currentProjectId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    suggestions: currentSuggestions
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert('Error applying suggestions: ' + data.error);
+                    return;
+                }
+                // Close the modal and show success message
+                closeSuggestionsModal();
+                alert('All suggestions have been applied successfully!');
+                // Reload the page to show updated project details
+                window.location.reload();
+            })
+            .catch(error => {
+                alert('Error applying suggestions: ' + error);
+            });
+        }
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('ai-suggestions-modal');
+        if (event.target === modal) {
+            closeSuggestionsModal();
         }
     }
 
