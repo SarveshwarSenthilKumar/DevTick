@@ -602,8 +602,8 @@
 </div>
 
 <div class="top-actions">
-    {% if not archived %}
-    <button onclick="window.location.href='/projects/checkarchived'">🗄️ Check Archived Projects</button>
+    {% if not deleted %}
+    <button onclick="window.location.href='/projects/checkdeleted'">🗄️ Check Deleted Projects</button>
     {% else %}
     <button onclick="window.location.href='/projects/getProjects'">Check Active Projects</button>
     {% endif %}
@@ -643,7 +643,7 @@
         </ul>
 
         <div class="project-actions">
-            {% if not archived %}
+            {% if not deleted %}
                 <button onclick="editProject({{ project.id }})" class="action-btn">Edit</button>
 
                 <form method="POST" action="/projects/deleteproject/{{ project.id }}" class="inline-form">
@@ -651,12 +651,6 @@
                 </form>
 
                 <button onclick="enhanceWithAI({{ project.id }})" class="action-btn ai-enhance-btn">✨ Enhance with AI</button>
-
-                {% if project.status != 'Archived' %}
-                <form method="POST" action="/projects/archiveproject/{{ project.id }}" class="inline-form">
-                    <button type="submit" class="action-btn archive-btn">Archive</button>
-                </form>
-                {% endif %}
             {% else %}
                 <form method="POST" action="/projects/recoverproject/{{ project.id }}" class="inline-form">
                     <button type="submit" class="action-btn recover-btn">Restore</button>

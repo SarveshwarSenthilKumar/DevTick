@@ -20,8 +20,11 @@ fields = [
           "repoLink",
           "contributors",
           "role",
+          "startDate",
+          "endDate",
           "notes",
-          "futurePlans"
+          "futurePlans",
+          "isActive"
         ]
 
 

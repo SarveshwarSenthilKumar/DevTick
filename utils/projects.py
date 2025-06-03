@@ -37,4 +37,16 @@ def create_project():
 
             return render_template("sentence.html", sentences=["You have successfully created an project!"])
         
-        
+@projects_blueprint.route("/getProjects", methods=["GET", "POST"])
+def getProjects():
+    if not session.get("name"):
+        return redirect("/")
+    else:
+        db = SQL("sqlite:///databases/projects.db")
+        projects = db.execute("SELECT * FROM projects WHERE ownedBy = :id and isActive != :deleted", id=session.get("id"), deleted="Deleted") 
+
+        for project in projects:
+            project["additionalFields"] = json.loads(project["additionalFields"])
+            project["additionalValues"] = json.loads(project["additionalValues"])
+
+        return render_template("viewProjects.html", projects=projects)
