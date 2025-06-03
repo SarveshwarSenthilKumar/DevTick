@@ -305,7 +305,6 @@ def viewdeleted():
 
     return render_template("viewProjects.html", projects=projects, deleted=True)
 
-
 @projects_blueprint.route("/recoverproject/<int:project_id>", methods=["GET", "POST"])
 def recover_project(project_id):
     if not session.get("name"):
@@ -343,4 +342,39 @@ def recover_project(project_id):
 
     return render_template("viewProjects.html", projects=projects, error="Project has been recovered successfully!", success=True)
 
+
+@projects_blueprint.route("/search", methods=["POST"])
+def search_projects():
+    if not session.get("name"):
+        return jsonify({"error": "Not authenticated"}), 401
+    
+    search_term = request.json.get("search_term", "").strip()
+    if not search_term:
+        return jsonify({"error": "No search term provided"}), 400
+    
+    try:
+        db = SQL("sqlite:///databases/projects.db")
+        projects = db.execute("""
+            SELECT * FROM projects 
+            WHERE ownedBy = :id 
+            AND isActive != :status
+            AND (
+                title LIKE :term 
+                OR description LIKE :term
+            )
+        """, id=session.get("id"), status="Deleted", term=f"%{search_term}%")
+        
+        for project in projects:
+            project["additionalFields"] = json.loads(project["additionalFields"])
+            project["additionalValues"] = json.loads(project["additionalValues"])
+        
+        return jsonify({"projects": projects})
+    except Exception as e:
+        error_details = {
+            "error": str(e),
+            "traceback": traceback.format_exc()
+        }
+        print(f"Error in search_keys: {error_details}")
+        return jsonify({"error": error_details}), 500
+    
 #Create Edit Key
