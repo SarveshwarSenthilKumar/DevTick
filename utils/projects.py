@@ -289,3 +289,20 @@ def delete_project(project_id):
         project["additionalValues"] = json.loads(project["additionalValues"])
 
     return render_template("viewProjects.html", projects=projects, error="Project has been deleted successfully!", success=True)
+
+
+@projects_blueprint.route("/checkdeleted", methods=["GET"])
+def viewdeleted():
+    if not session.get("name"):
+        return redirect("/")
+    
+    db = SQL("sqlite:///databases/projects.db")
+    projects = db.execute("SELECT * FROM projects WHERE ownedBy = :id AND isActive = :isActive", id=session.get("id"), isActive="Deleted")
+
+    for project in projects:
+        project["additionalFields"] = json.loads(project["additionalFields"])
+        project["additionalValues"] = json.loads(project["additionalValues"])
+
+    return render_template("viewProjects.html", projects=projects, deleted=True)
+
+#Create Edit Key
