@@ -305,4 +305,42 @@ def viewdeleted():
 
     return render_template("viewProjects.html", projects=projects, deleted=True)
 
+
+@projects_blueprint.route("/recoverproject/<int:project_id>", methods=["GET", "POST"])
+def recover_project(project_id):
+    if not session.get("name"):
+        return redirect("/")
+    
+    db = SQL("sqlite:///databases/projects.db")
+    
+    project = db.execute("SELECT id FROM projects WHERE id = :id AND ownedBy = :owner", 
+                     id=project_id, owner=session.get("id"))
+    if not project:
+        db = SQL("sqlite:///databases/projects.db")
+        keys = db.execute("SELECT * FROM projects WHERE ownedBy = :id", id=session.get("id"))
+
+        for project in projects:
+            project["additionalFields"] = json.loads(project["additionalFields"])
+            project["additionalValues"] = json.loads(project["additionalValues"])
+
+        return render_template("viewKeys.html", keys=projects, error="Key cannot be found!")
+    
+    else:
+        tz_NY = pytz.timezone('America/New_York') 
+        now = datetime.now(tz_NY)
+        recoveredOn = now.strftime("%d/%m/%Y %H:%M:%S")
+
+        status = "Recovered on " + recoveredOn
+
+        db.execute("UPDATE projects SET isActive = :isActive WHERE id = :id AND ownedBy = :owner", isActive=status, id=project_id, owner=session.get("id"))
+
+    db = SQL("sqlite:///databases/projects.db")
+    projects = db.execute("SELECT * FROM projects WHERE ownedBy = :id AND isActive != :isActive", id=session.get("id"), isActive="Deleted")
+
+    for project in projects:
+        project["additionalFields"] = json.loads(project["additionalFields"])
+        project["additionalValues"] = json.loads(project["additionalValues"])
+
+    return render_template("viewProjects.html", projects=projects, error="Project has been recovered successfully!", success=True)
+
 #Create Edit Key
