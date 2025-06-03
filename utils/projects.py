@@ -257,3 +257,35 @@ def apply_all_suggestions(project_id):
         }
         print(f"Error in apply_all_suggestions: {error_details}")
         return jsonify({"error": error_details}), 500
+
+
+@projects_blueprint.route("/deleteproject/<int:project_id>", methods=["POST"])
+def delete_project(project_id):
+    if not session.get("name"):
+        return redirect("/")
+    
+    db = SQL("sqlite:///databases/projects.db")
+    
+    project = db.execute("SELECT id FROM projects WHERE id = :id AND ownedBy = :owner", 
+                     id=project_id, owner=session.get("id"))
+    if not project:
+        db = SQL("sqlite:///databases/projects.db")
+        projects = db.execute("SELECT * FROM projects WHERE ownedBy = :id", id=session.get("id"))
+
+        for project in projects:
+            project["additionalFields"] = json.loads(project["additionalFields"])
+            project["additionalValues"] = json.loads(project["additionalValues"])
+
+        return render_template("viewProjects.html", projects=projects, error="Project cannot be found!")
+    
+    else:
+        db.execute("UPDATE projects SET isActive = :status WHERE id = :id AND ownedBy = :owner", status="Deleted", id=project_id, owner=session.get("id"))
+
+    db = SQL("sqlite:///databases/projects.db")
+    projects = db.execute("SELECT * FROM projects WHERE ownedBy = :id AND isActive != :status", id=session.get("id"), status="Deleted")
+
+    for project in projects:
+        project["additionalFields"] = json.loads(project["additionalFields"])
+        project["additionalValues"] = json.loads(project["additionalValues"])
+
+    return render_template("viewProjects.html", projects=projects, error="Project has been deleted successfully!", success=True)
