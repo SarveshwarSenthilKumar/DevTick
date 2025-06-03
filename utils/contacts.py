@@ -166,6 +166,7 @@ def recover_contact(contact_id):
         contact["additionalValues"] = json.loads(contact["additionalValues"])
 
     return render_template("viewContacts.html", contacts=contacts, error="Contact has been recovered successfully!", success=True)
+
 @contacts_blueprint.route("/search", methods=["POST"])
 def search_contacts():
     if not session.get("name"):

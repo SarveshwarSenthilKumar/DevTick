@@ -158,6 +158,7 @@ def recover_key(key_id):
         key["additionalValues"] = json.loads(key["additionalValues"])
 
     return render_template("viewKeys.html", keys=keys, error="Key has been recovered successfully!", success=True)
+
 @keys_blueprint.route("/search", methods=["POST"])
 def search_keys():
     if not session.get("name"):

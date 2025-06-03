@@ -139,3 +139,5 @@ def get_messages():
         }
         print(f"Error in get_messages: {error_details}")
         return jsonify({"error": error_details}), 500 
+    
+    
